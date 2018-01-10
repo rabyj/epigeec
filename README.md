@@ -13,7 +13,6 @@ Linux is the only OS currently supported
 Requires python2.7
 
 	pip install pandas numpy
-
 	sudo apt-get install libhdf5-openmpi-dev libssl-devlibsz2 boost
 
 **Clone repository**
