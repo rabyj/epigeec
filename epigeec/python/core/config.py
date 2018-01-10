@@ -17,7 +17,7 @@
 import os.path
 
 #directories
-MODULE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+MODULE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 #executables
 def exec_path(exec_name):
@@ -27,7 +27,7 @@ BW_TO_HDF5 = exec_path('bw_to_hdf5')
 BG_TO_HDF5 = exec_path('bg_to_hdf5')
 FILTER = exec_path('filter')
 CORRELATION = exec_path('correlation')
-MAKE_MATRIX = os.path.join(MODULE_DIR, 'make_matrix.py')
+MAKE_MATRIX = exec_path('make_matrix')
 
 #chrom sizes
 def chrom_sizes_path_maker(filename):
@@ -44,7 +44,7 @@ def get_chrom_sizes(assembly):
 
 #regions
 def region_path_maker(filename):
-    return os.path.join(os.path.dirname(MODULE_DIR), 'resource', 'region', filename)
+    return os.path.join(os.path.dirname(MODULE_DIR), 'resource', 'filter', filename)
 
 def get_region(assembly, content):
     if content == 'none':

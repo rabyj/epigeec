@@ -1,0 +1,57 @@
+#!/usr/bin/env python2
+# Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# =============================================================================
+
+import os.path
+import subprocess
+
+def get_tool_path(tool):
+    base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    return os.path.join(base_dir, "epigeec", "python", "core", tool)
+
+def launch_to_hdf5(list_path, conf_path):
+    tool_path = get_tool_path("to_hdf5.py")
+    subprocess.call(["python", tool_path, list_path, conf_path])
+
+def launch_filter(list_path, conf_path):
+    tool_path = get_tool_path("filter_hdf5.py")
+    subprocess.call(["python", tool_path, list_path, conf_path])
+
+def launch_corr(list_path, conf_path):
+    tool_path = get_tool_path("geec_corr.py")
+    subprocess.call(["python", tool_path, list_path, conf_path])
+
+def main():
+    self_path = os.path.realpath(__file__)
+    test_dir = os.path.dirname(self_path)
+    files_dir = os.path.join(test_dir, "files")
+    conf_path = os.path.join(files_dir, "test.conf")
+    template_path = os.path.join(test_dir, "template.conf")
+    list_path = os.path.join(test_dir, "test_list.txt")
+
+    open(conf_path, 'w').write(open(template_path).read().replace("__file__", test_dir))
+
+    launch_to_hdf5(list_path, conf_path)
+    launch_filter(list_path, conf_path)
+    launch_corr(list_path, conf_path)
+
+    if open(os.path.join(files_dir, "test.mat")).read() == open(os.path.join(files_dir, "expected")).read():
+        print "Success"
+    else: print "Failed"
+    subprocess.call(["sh", os.path.join(test_dir, "clean.sh")])
+
+if __name__ == "__main__":
+    main()

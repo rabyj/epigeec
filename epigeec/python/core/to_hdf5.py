@@ -31,9 +31,9 @@ def process_unit(args):
     try:
         raw_file, name, chrom_sizes, user_hdf5, resolution = args
         extension = os.path.splitext(raw_file)[1].lower()
-        if extension in ["bigwig", "bw"]:
+        if extension in [".bigwig", ".bw"]:
             bw_to_hdf5(raw_file, name, chrom_sizes, user_hdf5, resolution)
-        if extension in ["bedgraph", "bg"]:
+        elif extension in [".bedgraph", ".bg"]:
             bg_to_hdf5(raw_file, name, chrom_sizes, user_hdf5, resolution)
         else:
             print "{0} does not have a recognised extension".format(raw_file)
