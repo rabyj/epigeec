@@ -29,23 +29,22 @@ class InputFile(object):
     def __init__(self, file_path):
         self.nameset = set()
         self.files = []
-        self.names = []
         self.parse_file(file_path)
 
     def parse_file(self, file_path):
         try:
             with open(file_path) as list_file:
                 for line in list_file:
-                    path, name = line.split()
-                    if name not in self.nameset:
-                        self.nameset.add(name)
-                        self.files.append(path)
-                        self.names.append(name)
+                    line = line.strip()
+                    if line:
+                        if line not in self.nameset:
+                            self.nameset.add(line)
+                            self.files.append(line)
         except IOError:
             pass
 
     def __getitem__(self, index):
-        return self.files[index], self.names[index]
+        return self.files[index]
 
 
 class Matrix(object):
@@ -117,7 +116,7 @@ def weighted_average(line, weights):
 
 def main():
     input_file = InputFile(LIST_PATH)
-    matrix = CorrFileParser(CORR_PATH).make_matrix(input_file.names)
+    matrix = CorrFileParser(CORR_PATH).make_matrix(input_file.files)
     matrix.convert_labels(META)
     with open(OUTPUT_PATH, 'w') as output_file:
         output_file.write(str(matrix))

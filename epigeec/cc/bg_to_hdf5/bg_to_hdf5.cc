@@ -41,19 +41,18 @@ Output:
 int main(int argc, const char * argv[]) {
   std::string output_path, chrom_path, list_path, input_path, input_name;
   int bin;
-  if (argc < 5) {
+  if (argc < 4) {
     printf("Usage: to_hdf5 {dataset.bw} "
-                          "{name} "
                           "{chrom_sizes} "
-                          "{output.hdf5} "
-                          "{bin_size}\n");
+                          "{bin_size} "
+                          "{output.hdf5}\n");
     return 1;
   }
   input_path = argv[1];
-  input_name = argv[2];
-  chrom_path = argv[3];
+  chrom_path = argv[2];
+  bin = std::stoi(argv[3], NULL, 10);
   output_path = argv[4];
-  bin = std::stoi(argv[5], NULL, 10);
+  input_name = "dataset"
 
   ChromSize chrom_size = ChromSize(chrom_path);
   Hdf5Writer hdf5_writer(output_path);

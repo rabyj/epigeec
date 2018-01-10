@@ -46,27 +46,26 @@ int main(int argc, const char * argv[]) {
               output_path, include_path, exclude_path;
   int bin;
 
-  if (argc < 8) {
+  if (argc < 6) {
     printf("Usage: filter {input.hdf5} "
-                         "{input_name} "
-                         "{output.hdf5} "
                          "{chrom_sizes} "
                          "{bin_size} "
+                         "{output.hdf5} "
                          "{include.bed} "
                          "{exclude.bed}\n");
     return 1;
   }
 
   input_path = argv[1];
-  input_name = argv[2];
-  output_path = argv[3];
-  chrom_path = argv[4];
-  bin = std::stoi(argv[5], NULL, 10);
-  include_path = argv[6];
-  exclude_path = argv[7];
+  chrom_path = argv[2];
+  bin = std::stoi(argv[3], NULL, 10);
+  output_path = argv[4];
+  include_path = argv[5];
+  exclude_path = argv[6];
   Hdf5Reader hdf5_reader(input_path);
   Hdf5Writer hdf5_writer(output_path);
   ChromSize chrom_size = ChromSize(chrom_path);
+  input_name = "dataset"
 
   std::vector<std::string> chroms = chrom_size.get_chrom_list();
   GenomicFileReader* include_reader = GenomicFileReaderFactory::createGenomicFileReader(include_path, ".bd", chrom_size);

@@ -52,18 +52,18 @@ int main(int argc, const char * argv[]) {
   // TODO(jl): remove requirement for bin_size
   int bin;
 
-  if (argc < 5) {
+  if (argc < 4) {
     printf("Usage: correlation {input_list} "
                          "{chrom_sizes} "
-                         "{output.results} "
-                         "{bin_size}\n");
+                         "{bin_size}"
+                         "{output.results}\n");
     return 1;
   }
 
   list_path = argv[1];
   chrom_path = argv[2];
-  output_path = argv[3];
   bin = std::stoi(argv[4], NULL, 10);
+  output_path = argv[3];
 
   InputList input_list(list_path);
   ChromSize chrom_size = ChromSize(chrom_path);
@@ -77,12 +77,12 @@ int main(int argc, const char * argv[]) {
   for (uint64_t i = 0; i < input_list.size(); ++i) {
     try {
       Hdf5Reader hdf5_reader = Hdf5Reader(input_list[i].first);
-      data.emplace(input_list[i].second, new GenomicDataset(input_list[i].second));
+      data.emplace(input_list[i].first, new GenomicDataset(input_list[i].first));
       for (const std::string& chrom : chroms) {
         std::string name = input_list[i].second + "/" + chrom;
         if (hdf5_reader.IsValid(name)) {
           hdf5_dataset = hdf5_reader.GetDataset(name, bin);
-          data[input_list[i].second]->add_chromosome(chrom, hdf5_dataset);
+          data[input_list[i].first]->add_chromosome(chrom, hdf5_dataset);
         }
       }
     } catch (...) { std::cout<< "Could not open file: "<< input_list[i].first<< std::endl; }
@@ -92,8 +92,8 @@ int main(int argc, const char * argv[]) {
   std::vector<std::pair<std::string, std::string>> pairs;
   for (uint64_t i = 0; i < input_list.size(); ++i) {
     for (uint64_t j = 0; j <= i; ++j) {
-      pairs.push_back(std::make_pair(input_list[i].second,
-                                     input_list[j].second));
+      pairs.push_back(std::make_pair(input_list[i].first,
+                                     input_list[j].first));
     }
   }
   

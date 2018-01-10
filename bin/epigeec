@@ -16,16 +16,68 @@
 # =============================================================================
 
 import argparse
+import os.path
+import subprocess
 import sys
+import tempfile
+
+BIN_DIR = os.basedir(os.realpath(__file__))
+BW_TO_HDF5_PATH = os.path.join(BIN_DIR, "bw_to_hdf5")
+BG_TO_HDF5_PATH = os.path.join(BIN_DIR, "bg_to_hdf5")
+FILTER_PATH = os.path.join(BIN_DIR, "filter")
+CORR_PATH = os.path.join(BIN_DIR, "correlation")
+
+def tmp_name():
+    fd, temp_path = tempfile.mkstemp()
+    os.close(fd)
+    os.remove(temp_path)
+    return temp_path
+
+def get_hdf5_converter(args):
+    if args.bw:
+        exe = BW_TO_HDF5_PATH
+    elif args.bg:
+        exe = BG_TO_HDF5_PATH
+    else:
+        print "No file type switch provided use -bg or -bw"
+        sys.exit(1)
+    return exe
 
 def to_hdf5(args):
-    print "hdf5"
+    exe = get_hdf5_converter(args)
+    arguments = [exe,
+                 args.signal,
+                 args.chrom_sizes,
+                 args.bin,
+                 args.hdf5]
+    subprocess.call(arguments)
 
 def hdf5_filter(args):
-    print "filter"
+    arguments = [FILTER_PATH,
+                 args.signal,
+                 args.chrom_sizes,
+                 args.bin,
+                 args.hdf5,
+                 args.include,
+                 args.exclude]
+    subprocess.call(arguments)
 
 def corr(args):
-    print "corr"
+    corr_path = tmp_name()
+    #call correlation
+    arguments = [CORR_PATH,
+                 args.list,
+                 args.chrom_sizes,
+                 args.bin,
+                 corr_path]
+    subprocess.call(arguments)
+
+    #call make_matrix
+    arguments = [CORR_PATH,
+                 args.list,
+                 corr_path,
+                 args.mat]
+    subprocess.call(arguments)
 
 def make_parser():
     parser = argparse.ArgumentParser(description = "description")
@@ -33,20 +85,29 @@ def make_parser():
 
     parser_hdf5 = subparsers.add_parser("hdf5", help="hdf5 help")
     parser_hdf5.set_defaults(func=to_hdf5)
-    parser_hdf5.add_argument("bigwig")
+    group = parser_hdf5.add_mutually_exclusive_group(required=True)
+    group.add_argument("-bw")
+    group.add_argument("-bg")
+    parser_hdf5.add_argument("signal")
     parser_hdf5.add_argument("chrom_sizes")
     parser_hdf5.add_argument("bin")
     parser_hdf5.add_argument("hdf5")
 
     parser_filter = subparsers.add_parser("filter", help="filter help")
     parser_filter.set_defaults(func=hdf5_filter)
-    parser_filter.add_argument("list")
-    parser_filter.add_argument("config")
+    parser_filter.add_argument("signal")
+    parser_filter.add_argument("chrom_sizes")
+    parser_filter.add_argument("bin")
+    parser_filter.add_argument("hdf5")
+    parser_filter.add_argument("include")
+    parser_filter.add_argument("exclude")
 
     parser_corr = subparsers.add_parser("corr", help="corr help")
     parser_corr.set_defaults(func=corr)
-    parser_corr.add_argument("list")
-    parser_corr.add_argument("config")
+    parser_filter.add_argument("list")
+    parser_filter.add_argument("chrom_sizes")
+    parser_filter.add_argument("bin")
+    parser_filter.add_argument("mat")
    
     return parser
 

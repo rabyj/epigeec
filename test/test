@@ -15,43 +15,73 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
+import os
 import os.path
 import subprocess
 
-def get_tool_path(tool):
-    base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    return os.path.join(base_dir, "epigeec", "python", "core", tool)
+def launch_to_hdf5(exe_path, sig_path, chrom_path, resolution, hdf5_path):
+    command = [exe_path, "hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
+    subprocess.call(command)
 
-def launch_to_hdf5(list_path, conf_path):
-    tool_path = get_tool_path("to_hdf5.py")
-    subprocess.call(["python", tool_path, list_path, conf_path])
+def launch_filter(exe_path, hdf5_path, chrom_path, resolution, filtered_path, include_path, exclude_path):
+    command = [exe_path, "filter", hdf5_path, chrom_path, resolution, filtered_path, include_path, exclude_path]
+    subprocess.call(command)
 
-def launch_filter(list_path, conf_path):
-    tool_path = get_tool_path("filter_hdf5.py")
-    subprocess.call(["python", tool_path, list_path, conf_path])
-
-def launch_corr(list_path, conf_path):
-    tool_path = get_tool_path("geec_corr.py")
-    subprocess.call(["python", tool_path, list_path, conf_path])
+def launch_corr(exe_path, list_path, chrom_path, resolution, mat_path):
+    command = [exe_path, "corr", list_path, chrom_path, resolution, mat_path]
+    subprocess.call(command)
 
 def main():
     self_path = os.path.realpath(__file__)
+
     test_dir = os.path.dirname(self_path)
     files_dir = os.path.join(test_dir, "files")
-    conf_path = os.path.join(files_dir, "test.conf")
-    template_path = os.path.join(test_dir, "template.conf")
+    sig_dir = os.path.join(files_dir, "signal")
+    hdf5_dir = os.path.join(files_dir, "hdf5")
+    filtered_dir = os.path.join(files_dir, "filtered")
+    root_dir = os.path.basedir(test_dir)
+    bin_dir = os.path.join(root_dir, "bin")
+    resource_dir = os.path.join(root_dir, "resource")
+    chrom_dir = os.path.join(resource_dir, "chrom_sizes")
+    filter_dir = os.path.join(resource_dir, "filter")
+
+    epigeec_path = os.path.join(bin_dir, "epigeec")
     list_path = os.path.join(test_dir, "test_list.txt")
 
-    open(conf_path, 'w').write(open(template_path).read().replace("__file__", test_dir))
+    sig_path = [os.path.join(sig_dir, "d9f18e91644bacfee3669d577b661d15"),
+                   os.path.join(sig_dir, "fd85fe6672c629a116a9b6131883a60b")]
+    hdf5_path = [os.path.join(hdf5_dir, "d9f18e91644bacfee3669d577b661d15"),
+                 os.path.join(hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
+    filtered_path = [os.path.join(filtered_dir, "d9f18e91644bacfee3669d577b661d15"),
+                     os.path.join(filtered_dir, "fd85fe6672c629a116a9b6131883a60b")]
+    include_path = os.path.join(filter_dir, "saccer3.all.bed")
+    exclude_path = os.path.join(filter_dir, "none.bed")
+    mat_path = os.path.join(files_dir, "test.mat")
+    chrom_path = os.path.join(chrom_dir, "saccer3.can.chrom.sizes")
+    resolution = "10000"
 
-    launch_to_hdf5(list_path, conf_path)
-    launch_filter(list_path, conf_path)
-    launch_corr(list_path, conf_path)
+    launch_to_hdf5(epigeec_path, sig_path[0], chrom_path, resolution, hdf5_path[0])
+    launch_to_hdf5(epigeec_path, sig_path[1], chrom_path, resolution, hdf5_path[1])
+    launch_filter(epigeec_path, hdf5_path[0], chrom_path, resolution, filtered_path[0], include_path, exclude_path)
+    launch_filter(epigeec_path, hdf5_path[1], chrom_path, resolution, filtered_path[1], include_path, exclude_path)
+
+    with open(list_path) as test_list:
+        test_list.write("{0}\n{1}").format(filtered_path[0], filtered_path[1])
+
+    launch_corr(epigeec_path, list_path, chrom_path, resolution, mat_path)
 
     if open(os.path.join(files_dir, "test.mat")).read() == open(os.path.join(files_dir, "expected")).read():
         print "Success"
-    else: print "Failed"
-    subprocess.call(["sh", os.path.join(test_dir, "clean.sh")])
+    else: 
+        print "Failed"
+
+    os.remove(hdf5_path[0])
+    os.remove(hdf5_path[1])
+    os.remove(filtered_path[0])
+    os.remove(filtered_path[1])
+    os.remove(list_path)
+    os.remove(mat_path)
+
 
 if __name__ == "__main__":
     main()
