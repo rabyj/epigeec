@@ -12,13 +12,13 @@ Linux is the only OS currently supported
 
 Requires python2.7
 
-`pip install pandas numpy`
+	pip install pandas numpy
 
-`sudo apt-get install libhdf5-openmpi-dev libssl-devlibsz2 boost`
+	sudo apt-get install libhdf5-openmpi-dev libssl-devlibsz2 boost
 
 **Clone repository**
 
-`git clone https://<username>@bitbucket.org/labjacquespe/epigeec.git`
+	git clone https://<username>@bitbucket.org/labjacquespe/epigeec.git
 
 **Install epiGeEC**
 
@@ -30,15 +30,15 @@ Requires python2.7
 
 Conversion a signal file to hdf5 format  
 
-`usage: epigeec hdf5 [-h] (-bw | -bg) signal chrom_sizes bin hdf5`  
+	usage: epigeec hdf5 [-h] (-bw | -bg) signal chrom_sizes bin hdf5  
 
 Filter an hdf5 file (optional)  
 
-`usage: epigeec filter [-h] signal chrom_sizes bin hdf5 include exclude`  
+	usage: epigeec filter [-h] signal chrom_sizes bin hdf5 include exclude  
 
 Generate an NxN correlation matrix  
 
-`usage: epigeec corr [-h] list chrom_sizes bin mat`  
+	usage: epigeec corr [-h] list chrom_sizes bin mat  
   
 ‌‌   
 List of filters and assemblies offered in the [resource](resource) folder:
