@@ -8,10 +8,6 @@ A galaxy implementation including thousands of pre-computed public datasets is a
 - - - -
 Linux is the only OS currently supported
 
-**Clone repository**
-
-`git clone https://<username>@bitbucket.org/labjacquespe/epigeec.git`
-
 **Install dependencies**
 
 Requires python2.7
@@ -20,39 +16,32 @@ Requires python2.7
 
 `sudo apt-get install libhdf5-openmpi-dev libssl-devlibsz2 boost`
 
+**Clone repository**
+
+`git clone https://<username>@bitbucket.org/labjacquespe/epigeec.git`
+
+**Install epiGeEC**
+
+	cd epigeec
+	python setup.py install
+
 ### How To Use
 - - - -
 
-All tools require 2 parameters, a list of signal filenames and a config file
+Conversion a signal file to hdf5 format  
 
-`python <tool> mylist.txt myconfig.conf`
+`usage: epigeec hdf5 [-h] (-bw | -bg) signal chrom_sizes bin hdf5`  
 
-A sample config file can be found [here](epigeec/python/example.conf)
+Filter an hdf5 file (optional)  
 
-**Config parameters:**
+`usage: epigeec filter [-h] signal chrom_sizes bin hdf5 include exclude`  
 
-* sig_folder: a folder with all your signal files
+Generate an NxN correlation matrix  
 
-* hdf5_folder: path to folders that will hold your hdf5
-
-* filtered_folder: filtered path to folders that will hold your filtered hdf5 files
-
-* assembly: the assembly of your data (see below for list of available assembly)
-
-* include: name of the precomputed filter of regions to include (see below for list of available filters)
-
-* exclude: name of the precomputed filter of regions to excl (see below for list of available filters)
-
-    *note: in case of conflict, exclude takes priority*
-
-* resolution: the size of the bins used
-
-* corr_path: path for the matrix file
-
-* mat_path: path for the correlation file
-
+`usage: epigeec corr [-h] list chrom_sizes bin mat`  
+  
 ‌‌   
-List of available filters and assemblies:
+List of filters and assemblies offered in the [resource](resource) folder:
 
 1. hg19  
     * all: usually used as default value for "include"  
@@ -75,9 +64,8 @@ List of available filters and assemblies:
 1. saccer3  
     * all: usually used as default value for "include"  
     * none: use this as exclude file if you want to work with the entire genome  
-
-*note: it is possible to add aditional filters by adding them to the resource/filter folder they must follow the assembly.filtername.bed naming convension*
-
+  
+  
 ### Example
 - - - -
 
@@ -86,19 +74,13 @@ Create a directory structure to hold the data
 	myfolder  
 	├── signal  
 	├── hdf5  
-	├── filtered  
-	└── example.conf  
-
-The next step is to generate a list of the signal files to correlate, the following command can be used to take every file in the folder
-
-	cd /my/signal/folder  
-	ls > mylist.txt  
+	└── filtered  
 
 Start running the tools
 
-	python /path/to/epigeec/epigeec/python/core/to_hdf5.py mylist.txt example.conf  
-	python /path/to/epigeec/epigeec/python/core/filter_hdf5.py mylist.txt example.conf  
-	python /path/to/epigeec/epigeec/python/core/geec_corr.py mylist.txt example.conf  
+	epigeec -bw signal/myfile.bw chrom_sizes 10000 hdf5/myfile.hdf5
+	epigeec hdf5/myfile.hdf5 chrom_sizes 10000 filtered/myfile.hdf5 inc.bed exc.bed
+	epigeec filtered_list chrom_sizes 10000 mymatrix.mat  
 
 The output is a tab separated matrix file with your correlations
 
