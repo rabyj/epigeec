@@ -65,7 +65,7 @@ int main(int argc, const char * argv[]) {
   Hdf5Reader hdf5_reader(input_path);
   Hdf5Writer hdf5_writer(output_path);
   ChromSize chrom_size = ChromSize(chrom_path);
-  input_name = "dataset"
+  input_name = "dataset";
 
   std::vector<std::string> chroms = chrom_size.get_chrom_list();
   GenomicFileReader* include_reader = GenomicFileReaderFactory::createGenomicFileReader(include_path, ".bd", chrom_size);

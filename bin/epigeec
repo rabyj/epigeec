@@ -16,16 +16,18 @@
 # =============================================================================
 
 import argparse
+import logging
 import os.path
 import subprocess
 import sys
 import tempfile
 
-BIN_DIR = os.basedir(os.realpath(__file__))
+BIN_DIR = os.path.dirname(os.path.realpath(__file__))
 BW_TO_HDF5_PATH = os.path.join(BIN_DIR, "bw_to_hdf5")
 BG_TO_HDF5_PATH = os.path.join(BIN_DIR, "bg_to_hdf5")
 FILTER_PATH = os.path.join(BIN_DIR, "filter")
 CORR_PATH = os.path.join(BIN_DIR, "correlation")
+MAKE_MATRIX_PATH = os.path.join(BIN_DIR, "make_matrix")
 
 def tmp_name():
     fd, temp_path = tempfile.mkstemp()
@@ -45,39 +47,39 @@ def get_hdf5_converter(args):
 
 def to_hdf5(args):
     exe = get_hdf5_converter(args)
-    arguments = [exe,
+    command = [exe,
                  args.signal,
                  args.chrom_sizes,
                  args.bin,
                  args.hdf5]
-    subprocess.call(arguments)
+    subprocess.call(command)
 
 def hdf5_filter(args):
-    arguments = [FILTER_PATH,
+    command = [FILTER_PATH,
                  args.signal,
                  args.chrom_sizes,
                  args.bin,
                  args.hdf5,
                  args.include,
                  args.exclude]
-    subprocess.call(arguments)
+    subprocess.call(command)
 
 def corr(args):
     corr_path = tmp_name()
     #call correlation
-    arguments = [CORR_PATH,
+    command = [CORR_PATH,
                  args.list,
                  args.chrom_sizes,
                  args.bin,
                  corr_path]
-    subprocess.call(arguments)
+    subprocess.call(command)
 
     #call make_matrix
-    arguments = [CORR_PATH,
+    command = [MAKE_MATRIX_PATH,
                  args.list,
                  corr_path,
                  args.mat]
-    subprocess.call(arguments)
+    subprocess.call(command)
 
 def make_parser():
     parser = argparse.ArgumentParser(description = "description")
@@ -86,8 +88,8 @@ def make_parser():
     parser_hdf5 = subparsers.add_parser("hdf5", help="hdf5 help")
     parser_hdf5.set_defaults(func=to_hdf5)
     group = parser_hdf5.add_mutually_exclusive_group(required=True)
-    group.add_argument("-bw")
-    group.add_argument("-bg")
+    group.add_argument("-bw", action='store_true')
+    group.add_argument("-bg", action='store_true')
     parser_hdf5.add_argument("signal")
     parser_hdf5.add_argument("chrom_sizes")
     parser_hdf5.add_argument("bin")
@@ -104,10 +106,10 @@ def make_parser():
 
     parser_corr = subparsers.add_parser("corr", help="corr help")
     parser_corr.set_defaults(func=corr)
-    parser_filter.add_argument("list")
-    parser_filter.add_argument("chrom_sizes")
-    parser_filter.add_argument("bin")
-    parser_filter.add_argument("mat")
+    parser_corr.add_argument("list")
+    parser_corr.add_argument("chrom_sizes")
+    parser_corr.add_argument("bin")
+    parser_corr.add_argument("mat")
    
     return parser
 

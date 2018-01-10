@@ -52,7 +52,7 @@ int main(int argc, const char * argv[]) {
   chrom_path = argv[2];
   bin = std::stoi(argv[3], NULL, 10);
   output_path = argv[4];
-  input_name = "dataset"
+  input_name = "dataset";
 
   ChromSize chrom_size = ChromSize(chrom_path);
   Hdf5Writer hdf5_writer(output_path);

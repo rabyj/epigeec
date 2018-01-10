@@ -15,23 +15,35 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
+import argparse
+import logging
 import os
 import os.path
 import subprocess
 
 def launch_to_hdf5(exe_path, sig_path, chrom_path, resolution, hdf5_path):
     command = [exe_path, "hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
+    logging.debug(command)
     subprocess.call(command)
 
 def launch_filter(exe_path, hdf5_path, chrom_path, resolution, filtered_path, include_path, exclude_path):
     command = [exe_path, "filter", hdf5_path, chrom_path, resolution, filtered_path, include_path, exclude_path]
+    logging.debug(command)
     subprocess.call(command)
 
 def launch_corr(exe_path, list_path, chrom_path, resolution, mat_path):
     command = [exe_path, "corr", list_path, chrom_path, resolution, mat_path]
+    logging.debug(command)
     subprocess.call(command)
 
 def main():
+    parser = argparse.ArgumentParser(description='A test script for epigeec')
+    parser.add_argument("-v", "--verbose", help="enable debug logs", action="store_true")
+
+    args = parser.parse_args()
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+
     self_path = os.path.realpath(__file__)
 
     test_dir = os.path.dirname(self_path)
@@ -39,7 +51,7 @@ def main():
     sig_dir = os.path.join(files_dir, "signal")
     hdf5_dir = os.path.join(files_dir, "hdf5")
     filtered_dir = os.path.join(files_dir, "filtered")
-    root_dir = os.path.basedir(test_dir)
+    root_dir = os.path.dirname(test_dir)
     bin_dir = os.path.join(root_dir, "bin")
     resource_dir = os.path.join(root_dir, "resource")
     chrom_dir = os.path.join(resource_dir, "chrom_sizes")
@@ -60,13 +72,13 @@ def main():
     chrom_path = os.path.join(chrom_dir, "saccer3.can.chrom.sizes")
     resolution = "10000"
 
+    with open(list_path, 'w') as test_list:
+        test_list.write("{0}\n{1}".format(filtered_path[0], filtered_path[1]))
+
     launch_to_hdf5(epigeec_path, sig_path[0], chrom_path, resolution, hdf5_path[0])
     launch_to_hdf5(epigeec_path, sig_path[1], chrom_path, resolution, hdf5_path[1])
     launch_filter(epigeec_path, hdf5_path[0], chrom_path, resolution, filtered_path[0], include_path, exclude_path)
     launch_filter(epigeec_path, hdf5_path[1], chrom_path, resolution, filtered_path[1], include_path, exclude_path)
-
-    with open(list_path) as test_list:
-        test_list.write("{0}\n{1}").format(filtered_path[0], filtered_path[1])
 
     launch_corr(epigeec_path, list_path, chrom_path, resolution, mat_path)
 

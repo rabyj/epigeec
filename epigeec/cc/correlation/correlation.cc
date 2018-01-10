@@ -62,8 +62,8 @@ int main(int argc, const char * argv[]) {
 
   list_path = argv[1];
   chrom_path = argv[2];
-  bin = std::stoi(argv[4], NULL, 10);
-  output_path = argv[3];
+  bin = std::stoi(argv[3], NULL, 10);
+  output_path = argv[4];
 
   InputList input_list(list_path);
   ChromSize chrom_size = ChromSize(chrom_path);
