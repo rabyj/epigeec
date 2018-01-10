@@ -9,5 +9,6 @@ setup(
     author_email = "jonathan.laperle@usherbrooke.ca",
     description = ("TODO"),
     scripts=["bin/epigeec"],
+    install_requires=["pandas", "numpy"],
     license = "GPL",
 )
