@@ -1,8 +1,8 @@
 # epiGeEC
 - - - -
-The **epiGenomic Efficient Correlator** tool is designed to efficiently perform pairwise correlations of thousands of epigenomic datasets. It supports many genomic signal file formats (bigWig, WIG and bedGraph), and offers the possibility to compute correlations at various resolutions (from 1 kb to 10 Mb) on predefined filtered regions (e.g. whole genome with or without blacklist-ed regions, only genes, TSS) and using the selected correlation metric (Pearson and Spearman), as well as the annotation and analysis of the generated correlation matrices. Most of the wrapping is coded in Python, while the core functionalities requiring high performance are coded in C++ using the openMP API for parallelization.  
+The **epiGenomic Efficient Correlator** tool is designed to efficiently perform pairwise pearson correlations(spearman coming soon) of thousands of epigenomic datasets. It supports both bigWig and bedGraph formats(WIG coming soon) and offers the possibility to compute correlations at any resolution(1kb to 1mb is prefered for human genome) on costum or predefined filtered regions, as well as the annotation and analysis of the generated correlation matrices.
     
-A galaxy implementation including thousands of pre-computed public datasets is availalble at [http://epigeec.genap.ca/galaxy/](http://epigeec.genap.ca/galaxy/)  
+A galaxy implementation including thousands of pre-computed public datasets is availalble at http://epigeec.genap.ca/galaxy/ and already includes support for the WIG format and spearman correlation
  
 ### Installation
 - - - -
@@ -26,17 +26,21 @@ Requires python2.7
 ### How To Use
 - - - -
 
-Conversion a signal file to hdf5 format  
+For more info on each parameter see use
 
-	usage: epigeec hdf5 [-h] (-bw | -bg) signal chrom_sizes bin hdf5  
+	epigeec [tool] --help
+
+Conversion of a signal file to hdf5 format
+
+	usage: epigeec hdf5 [-h] (-bw | -bg) signal_file chrom_sizes resolution output_hdf5
 
 Filter an hdf5 file (optional)  
 
-	usage: epigeec filter [-h] [--include INCLUDE] [--exclude EXCLUDE]
+	usage: epigeec filter [-h] [--include INCLUDE] [--exclude EXCLUDE] hdf5 chrom_sizes resolution output_hdf5
 
 Generate an NxN correlation matrix  
 
-	usage: epigeec corr [-h] list chrom_sizes bin mat  
+	usage: main.py correlation [-h] list chrom_sizes resolution output_matrix 
   
 ‌‌   
 List of assemblies and filters offered in the [resource](epigeec/resource) folder:

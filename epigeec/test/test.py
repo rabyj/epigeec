@@ -38,7 +38,7 @@ def launch_filter(exe_path, hdf5_path, chrom_path, resolution, filtered_path, in
     subprocess.call(command)
 
 def launch_corr(exe_path, list_path, chrom_path, resolution, mat_path):
-    command = [exe_path, "corr", list_path, chrom_path, resolution, mat_path]
+    command = [exe_path, "correlation", list_path, chrom_path, resolution, mat_path]
     logging.debug(command)
     subprocess.call(command)
 
