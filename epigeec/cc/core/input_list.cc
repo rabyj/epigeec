@@ -24,10 +24,10 @@ InputList::InputList(const std::string& file_path) {
   std::string path, name;
   int count = 0;
   bool success = 0;
-  while (flot>> path>> name) {
-    success = this->index_map_.emplace(name, count).second; // ensures no duplicates
+  while (flot>> path) {
+    success = this->index_map_.emplace(path, count).second; // ensures no duplicates
     if (success) {
-      this->files_.push_back(std::make_pair(path, name));
+      this->files_.push_back(std::make_pair(path, "dataset"));
       ++count;
     }
   }
