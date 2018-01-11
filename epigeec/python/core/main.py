@@ -57,18 +57,18 @@ def get_hdf5_converter(args):
 def to_hdf5(args):
     exe = get_hdf5_converter(args)
     command = [exe,
-                 args.signal_file,
-                 args.chrom_sizes,
+                 args.signalFile,
+                 args.chromSizes,
                  args.resolution,
-                 args.output_hdf5]
+                 args.outHdf5]
     subprocess.call(command)
 
 def hdf5_filter(args):
-    if args.include:
-        include = args.include
+    if args.select:
+        select = args.select
     else:
-        include = tmp_name()
-        make_all_filter(open(include, 'w'), open(args.chrom_sizes))
+        select = tmp_name()
+        make_all_filter(open(select, 'w'), open(args.chromSizes))
     if args.exclude:
         exclude = args.exclude
     else:
@@ -76,10 +76,10 @@ def hdf5_filter(args):
         open(exclude, 'w')
     command = [FILTER_PATH,
                  args.hdf5,
-                 args.chrom_sizes,
+                 args.chromSizes,
                  args.resolution,
-                 args.output_hdf5,
-                 include,
+                 args.outHdf5,
+                 select,
                  exclude]
     subprocess.call(command)
 
@@ -87,45 +87,46 @@ def corr(args):
     corr_path = tmp_name()
     #call correlation
     command = [CORR_PATH,
-                 args.hdf5_list,
-                 args.chrom_sizes,
+                 args.hdf5List,
+                 args.chromSizes,
                  args.resolution,
                  corr_path]
     subprocess.call(command)
 
     #call make_matrix
-    make_matrix.main(args.hdf5_list, corr_path, args.output_matrix)
+    make_matrix.main(args.hdf5List, corr_path, args.outMatrix)
     subprocess.call(command)
 
 def make_parser():
-    parser = argparse.ArgumentParser(description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing data")
-    subparsers = parser.add_subparsers(help = "sub-command help")
+    parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9')
+    subparsers = parser.add_subparsers(help = "Sub-command help.") #TODO submod summary
 
-    parser_hdf5 = subparsers.add_parser("to_hdf5", help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools")
+    parser_hdf5 = subparsers.add_parser("to_hdf5", description="Average the singla in non-overlapping bins." ,help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools.")
     parser_hdf5.set_defaults(func=to_hdf5)
     group = parser_hdf5.add_mutually_exclusive_group(required=True)
-    group.add_argument("-bw", "--bigwig", action='store_true', help="use this flag for a bigwig file")
-    group.add_argument("-bg", "--bedgraph", action='store_true', help="use this flag for a bedgraph file")
-    parser_hdf5.add_argument("signal_file", help="signal file (bigwig or bedgraph")
-    parser_hdf5.add_argument("chrom_sizes", help="chrom_sizes of the assembly, chromosomes not in this file will be ignored")
-    parser_hdf5.add_argument("resolution", help="resolution of the binning (1kb to 1mb prefered for human)")
-    parser_hdf5.add_argument("output_hdf5", help="output file (hdf5)")
+    group.add_argument("-bw", "--bigwig", action='store_true', help="Indicate that the signal file is in bigWig format.")
+    group.add_argument("-bg", "--bedgraph", action='store_true', help="Indicate that the signal file is in bedGraph format.")
+    parser_hdf5.add_argument("signalFile", help="The signal file, bigWig or bedGraph. (TEXT)")
+    parser_hdf5.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
+    parser_hdf5.add_argument("resolution", help="The resolution of the binning in base pair (1kb suggested for human). (INTEGER)")
+    parser_hdf5.add_argument("outHdf5", help="The output file. (TEXT)")
 
-    parser_filter = subparsers.add_parser("filter", help="Select regions to be kept or removed from an hdf5 file, this step is optional")
+    parser_filter = subparsers.add_parser("filter", description="Select or remove bins of a HDF5 file." ,help="Select regions to be kept or removed from a HDF5 file (this step is optional).")
     parser_filter.set_defaults(func=hdf5_filter)
-    parser_filter.add_argument("hdf5", help="hdf5 file to be filtered")
-    parser_filter.add_argument("chrom_sizes", help="chrom_sizes of the assembly, chromosomes not in this file will be ignored")
-    parser_filter.add_argument("resolution", help="resolution of the binning (1kb to 1mb prefered for human)")
-    parser_filter.add_argument("output_hdf5", help="output file (hdf5)")
-    parser_filter.add_argument("--include", "-i", help="bed file of regions to keep(exclude wins in case of conflict with include)")
-    parser_filter.add_argument("--exclude", "-e", help="bed file of resions to remove(exclude wins in case of conflict with include)")
+    parser_filter.add_argument("hdf5", help="The HDF5 file to be filtered. (TEXT)")
+    parser_filter.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
+    parser_filter.add_argument("resolution", help="The resolution of the binning in base pair (1kb suggested for human). (INTEGER)")
+    parser_filter.add_argument("outHdf5", help="The output file. (TEXT)")
+    parser_filter.add_argument("--select", "-s", help="The file in BED format containing the regions to select, others are ignored. In case a region is both selected and excluded, the exclusion dominates. (TEXT)")
+    parser_filter.add_argument("--exclude", "-e", help="The file in BED format containing the regions to exclude.")
 
-    parser_corr = subparsers.add_parser("correlation", help="Perform N by N pearson correlation of hdf5 files, must be same assembly, filter and resolution")
+    parser_corr = subparsers.add_parser("correlate", description="Compute a Pearson correlation coefficient for each pair of hdf5 from a list.", help="Perform N by N Pearson correlation of HDF5 files generated with the same chrom sizes, filters and resolution.")
     parser_corr.set_defaults(func=corr)
-    parser_corr.add_argument("hdf5_list", help="list of hdf5 files to correlate, one file per line")
-    parser_corr.add_argument("chrom_sizes", help="chrom_sizes of the assembly, chromosomes not in this file will be ignored")
-    parser_corr.add_argument("resolution", help="resolution of the binning (1kb to 1mb prefered for human)")
-    parser_corr.add_argument("output_matrix", help="final tsv matrix file with every correlation result")
+    parser_corr.add_argument("hdf5List", help="The list of HDF5 files to correlate, one file per line. (TEXT)")
+    parser_corr.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
+    parser_corr.add_argument("resolution", help="The resolution of the binning in base pair (1kb suggested for human). (INTEGER)")
+    parser_corr.add_argument("outMatrix", help="The final tab-delimited matrix file. (TEXT)")
    
     return parser
 
