@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
-import os
+import os.path
 from setuptools import setup, find_packages
 
 setup(
@@ -27,5 +27,6 @@ setup(
     entry_points = {'console_scirpts': ['epigeec = epigeec.python.core.main:main']},
     install_requires = ["pandas", "numpy", "wheel"],
     license = "GPL",
-    python_requires='>=2.6, <3'
+    python_requires = '>=2.6, <3',
+    long_description = open("README.rst").read()
 )
