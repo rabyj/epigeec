@@ -24,7 +24,6 @@ setup(
     author_email = "jonathan.laperle@usherbrooke.ca",
     description = ("TODO"),
     packages = find_packages(),
-    #data_files = [('bin', ['epigeec/bin/*'])]
     entry_points = {'console_scirpts': ['epigeec = epigeec.python.core.main:main']},
     install_requires = ["pandas", "numpy", "wheel"],
     license = "GPL",

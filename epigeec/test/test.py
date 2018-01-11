@@ -32,8 +32,8 @@ def launch_to_hdf5(exe_path, sig_path, chrom_path, resolution, hdf5_path):
     logging.debug(command)
     subprocess.call(command)
 
-def launch_filter(exe_path, hdf5_path, chrom_path, resolution, filtered_path, include_path, exclude_path):
-    command = [exe_path, "filter", hdf5_path, chrom_path, resolution, filtered_path, include_path, exclude_path]
+def launch_filter(exe_path, hdf5_path, chrom_path, resolution, filtered_path, include_path=None, exclude_path=None):
+    command = [exe_path, "filter", hdf5_path, chrom_path, resolution, filtered_path]
     logging.debug(command)
     subprocess.call(command)
 
@@ -61,7 +61,6 @@ def main():
     bin_dir = os.path.join(epi_dir, "bin")
     resource_dir = os.path.join(epi_dir, "resource")
     chrom_dir = os.path.join(resource_dir, "chrom_sizes")
-    filter_dir = os.path.join(resource_dir, "filter")
 
     epigeec_path = os.path.join(epi_dir, "python", "core", "main.py")
     list_path = os.path.join(test_dir, "test_list.txt")
@@ -72,8 +71,6 @@ def main():
                  os.path.join(hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
     filtered_path = [os.path.join(filtered_dir, "d9f18e91644bacfee3669d577b661d15"),
                      os.path.join(filtered_dir, "fd85fe6672c629a116a9b6131883a60b")]
-    include_path = os.path.join(filter_dir, "saccer3.all.bed")
-    exclude_path = os.path.join(filter_dir, "none.bed")
     mat_path = os.path.join(files_dir, "test.mat")
     chrom_path = os.path.join(chrom_dir, "saccer3.can.chrom.sizes")
     resolution = "10000"
@@ -83,8 +80,8 @@ def main():
 
     launch_to_hdf5(epigeec_path, sig_path[0], chrom_path, resolution, hdf5_path[0])
     launch_to_hdf5(epigeec_path, sig_path[1], chrom_path, resolution, hdf5_path[1])
-    launch_filter(epigeec_path, hdf5_path[0], chrom_path, resolution, filtered_path[0], include_path, exclude_path)
-    launch_filter(epigeec_path, hdf5_path[1], chrom_path, resolution, filtered_path[1], include_path, exclude_path)
+    launch_filter(epigeec_path, hdf5_path[0], chrom_path, resolution, filtered_path[0])
+    launch_filter(epigeec_path, hdf5_path[1], chrom_path, resolution, filtered_path[1])
 
     launch_corr(epigeec_path, list_path, chrom_path, resolution, mat_path)
 

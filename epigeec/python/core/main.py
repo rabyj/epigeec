@@ -37,6 +37,13 @@ def tmp_name():
     os.remove(temp_path)
     return temp_path
 
+def make_all_filter(tmp, chrom):
+    for line in chrom:
+       line = line.strip()
+       if line:
+           line = line.split()
+           tmp.write("{0}\t{1}\t{2}\n".format(line[0], "0", line[1]))
+
 def get_hdf5_converter(args):
     if args.bw:
         exe = BW_TO_HDF5_PATH
@@ -57,13 +64,23 @@ def to_hdf5(args):
     subprocess.call(command)
 
 def hdf5_filter(args):
+    if args.include:
+        include = args.include
+    else:
+        include = tmp_name()
+        make_all_filter(open(include, 'w'), open(args.chrom_sizes))
+    if args.exclude:
+        exclude = args.exclude
+    else:
+        exclude = tmp_name()
+        open(exclude, 'w')
     command = [FILTER_PATH,
                  args.signal,
                  args.chrom_sizes,
                  args.bin,
                  args.hdf5,
-                 args.include,
-                 args.exclude]
+                 include,
+                 exclude]
     subprocess.call(command)
 
 def corr(args):
@@ -100,8 +117,8 @@ def make_parser():
     parser_filter.add_argument("chrom_sizes")
     parser_filter.add_argument("bin")
     parser_filter.add_argument("hdf5")
-    parser_filter.add_argument("include")
-    parser_filter.add_argument("exclude")
+    parser_filter.add_argument("--include", "-i")
+    parser_filter.add_argument("--exclude", "-e")
 
     parser_corr = subparsers.add_parser("corr", help="corr help")
     parser_corr.set_defaults(func=corr)

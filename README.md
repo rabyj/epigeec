@@ -32,36 +32,28 @@ Conversion a signal file to hdf5 format
 
 Filter an hdf5 file (optional)  
 
-	usage: epigeec filter [-h] signal chrom_sizes bin hdf5 include exclude  
+	usage: epigeec filter [-h] [--include INCLUDE] [--exclude EXCLUDE]
 
 Generate an NxN correlation matrix  
 
 	usage: epigeec corr [-h] list chrom_sizes bin mat  
   
 ‌‌   
-List of filters and assemblies offered in the [resource](epigeec/resource) folder:
+List of assemblies and filters offered in the [resource](epigeec/resource) folder:
 
 1. hg19  
-    * all: usually used as default value for "include"  
-    * none: use this as exclude file if you want to work with the entire genome  
     * blklst: blacklisted regions  
     * gene: regions corresponding to genes (refseq)  
     * tss: transcription sites (refseq)  
     
-1. hg38  
-    * all: usually used as default value for "include"  
-    * none: use this as exclude file if you want to work with the entire genome  
+1. hg38    
     * gene: regions corresponding to genes (refseq)  
     * tss: transcription sites (refseq)  
     
-1. mm10  
-    * all: usually used as default value for "include"  
-    * none: use this as exclude file if you want to work with the entire genome  
+1. mm10   
     * blklst: blacklisted regions  
     
-1. saccer3  
-    * all: usually used as default value for "include"  
-    * none: use this as exclude file if you want to work with the entire genome  
+1. saccer3 
   
   
 ### Example
