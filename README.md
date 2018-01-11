@@ -35,7 +35,7 @@ Filter an hdf5 file (optional)
 
 Generate an NxN correlation matrix  
 
-	usage: main.py correlation [-h] hdf5_list chrom_sizes resolution output_matrix 
+	usage: epigeec correlation [-h] hdf5_list chrom_sizes resolution output_matrix 
   
 ‌‌   
 List of assemblies and filters offered in the [resource](epigeec/resource) folder:
