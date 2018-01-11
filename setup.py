@@ -19,7 +19,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "epigeec",
-    version = "0.9",
+    version = "1.0",
     author = "Jonathan Laperle",
     author_email = "jonathan.laperle@usherbrooke.ca",
     description = ("Tools for fast NxN correlation of whole-genome epigenomic data."),

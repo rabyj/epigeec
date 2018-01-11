@@ -24,6 +24,8 @@ import tempfile
 
 import make_matrix
 
+VERSION = "1.0"
+
 EPI_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 BIN_DIR = os.path.join(EPI_DIR, "bin")
 BW_TO_HDF5_PATH = os.path.join(BIN_DIR, "bw_to_hdf5")
@@ -99,7 +101,7 @@ def corr(args):
 
 def make_parser():
     parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.9')
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.") #TODO submod summary
 
     parser_hdf5 = subparsers.add_parser("to_hdf5", description="Average the singla in non-overlapping bins." ,help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools.")
