@@ -39,7 +39,7 @@ Generate an NxN correlation matrix
 	usage: epigeec corr [-h] list chrom_sizes bin mat  
   
 ‌‌   
-List of filters and assemblies offered in the [resource](resource) folder:
+List of filters and assemblies offered in the [resource](epigeec/resource) folder:
 
 1. hg19  
     * all: usually used as default value for "include"  
