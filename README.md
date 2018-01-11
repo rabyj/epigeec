@@ -2,7 +2,7 @@
 - - - -
 The **epiGenomic Efficient Correlator** tool is designed to efficiently perform pairwise correlations of thousands of epigenomic datasets. It supports a growing number of file formats and offers the possibility to compute correlations at any resolution on costum or predefined filtered regions. The correlation matrix can be further annotated and analysed using our other [tools](https://bitbucket.org/labjacquespe/geec_analysis).  
   
-A galaxy implementation including thousands of pre-computed public datasets is availalble at [http://epigeec.genap.ca/galaxy/](http://epigeec.genap.ca/galaxy/)  
+A galaxy implementation including thousands of pre-computed public datasets is availalble at http://epigeec.genap.ca/galaxy/ and already includes support for the WIG format and spearman correlation(coming soon to command line version).
 
 ### Installation
 - - - -
