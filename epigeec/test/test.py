@@ -28,7 +28,7 @@ def get_corr_vals(mat):
         vals + line.split()[1:]
 
 def launch_to_hdf5(exe_path, sig_path, chrom_path, resolution, hdf5_path):
-    command = [exe_path, "hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
+    command = [exe_path, "to_hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
     logging.debug(command)
     subprocess.call(command)
 
