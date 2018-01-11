@@ -33,7 +33,7 @@ setup(
     author_email = "jonathan.laperle@usherbrooke.ca",
     description = ("Tools for fast NxN correlation of whole-genome epigenomic data."),
     packages = find_packages(),
-    entry_points = {'console_scirpts': ['epigeec = epigeec.python.core.main:main']},
+    entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:main']},
     install_requires = ["pandas", "numpy", "wheel"],
     license = "GPL",
     python_requires = '>=2.6, <3',
