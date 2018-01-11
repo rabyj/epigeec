@@ -14,14 +14,9 @@ Requires python2.7
 
 	sudo apt-get install libhdf5-openmpi-dev libssl-devlibsz2 boost
 
-**Clone repository**
-
-	git clone https://<username>@bitbucket.org/labjacquespe/epigeec.git
-
 **Install epiGeEC**
 
-	cd epigeec
-	python setup.py install
+	pip install epigeec --index-url https://test.pypi.org/simple/
 
 ### How To Use
 - - - -

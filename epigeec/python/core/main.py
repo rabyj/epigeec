@@ -45,9 +45,9 @@ def make_all_filter(tmp, chrom):
            tmp.write("{0}\t{1}\t{2}\n".format(line[0], "0", line[1]))
 
 def get_hdf5_converter(args):
-    if args.bw:
+    if args.bigwig:
         exe = BW_TO_HDF5_PATH
-    elif args.bg:
+    elif args.bedgraph:
         exe = BG_TO_HDF5_PATH
     else:
         print "No file type switch provided use -bg or -bw"
@@ -57,10 +57,10 @@ def get_hdf5_converter(args):
 def to_hdf5(args):
     exe = get_hdf5_converter(args)
     command = [exe,
-                 args.signal,
+                 args.signal_file,
                  args.chrom_sizes,
-                 args.bin,
-                 args.hdf5]
+                 args.resolution,
+                 args.output_hdf5]
     subprocess.call(command)
 
 def hdf5_filter(args):
@@ -75,10 +75,10 @@ def hdf5_filter(args):
         exclude = tmp_name()
         open(exclude, 'w')
     command = [FILTER_PATH,
-                 args.signal,
+                 args.signal_file,
                  args.chrom_sizes,
-                 args.bin,
-                 args.hdf5,
+                 args.resolution,
+                 args.output_hdf5,
                  include,
                  exclude]
     subprocess.call(command)
@@ -87,9 +87,9 @@ def corr(args):
     corr_path = tmp_name()
     #call correlation
     command = [CORR_PATH,
-                 args.list,
+                 args.hdf5_list,
                  args.chrom_sizes,
-                 args.bin,
+                 args.resolution,
                  corr_path]
     subprocess.call(command)
 
@@ -101,7 +101,7 @@ def make_parser():
     parser = argparse.ArgumentParser(description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing data")
     subparsers = parser.add_subparsers(help = "sub-command help")
 
-    parser_hdf5 = subparsers.add_parser("hdf5", help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools")
+    parser_hdf5 = subparsers.add_parser("to_hdf5", help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools")
     parser_hdf5.set_defaults(func=to_hdf5)
     group = parser_hdf5.add_mutually_exclusive_group(required=True)
     group.add_argument("-bw", "--bigwig", action='store_true', help="use this flag for a bigwig file")
