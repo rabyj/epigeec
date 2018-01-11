@@ -12,7 +12,7 @@ Linux is the only OS currently supported
 
 Requires python2.7
 
-	sudo apt-get install libhdf5-openmpi-dev libssl-devlibsz2 boost
+	sudo apt-get install libhdf5-dev libssl-dev boost
 
 **Install epiGeEC**
 
