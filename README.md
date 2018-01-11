@@ -16,7 +16,7 @@ Requires python2.7
 
 **Install epiGeEC**
 
-	pip install epigeec --index-url https://test.pypi.org/simple/
+	sudo pip install epigeec --index-url https://test.pypi.org/simple/
 
 ### How To Use
 - - - -
@@ -27,7 +27,7 @@ For more info on each parameter see use
 
 Conversion of a signal file to hdf5 format
 
-	usage: epigeec hdf5 [-h] (-bw | -bg) signal_file chrom_sizes resolution output_hdf5
+	usage: epigeec to_hdf5 [-h] (-bw | -bg) signal_file chrom_sizes resolution output_hdf5
 
 Filter an hdf5 file (optional)  
 

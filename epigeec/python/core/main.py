@@ -75,7 +75,7 @@ def hdf5_filter(args):
         exclude = tmp_name()
         open(exclude, 'w')
     command = [FILTER_PATH,
-                 args.signal_file,
+                 args.hdf5,
                  args.chrom_sizes,
                  args.resolution,
                  args.output_hdf5,
@@ -94,7 +94,7 @@ def corr(args):
     subprocess.call(command)
 
     #call make_matrix
-    make_matrix.main(args.list, corr_path, args.mat)
+    make_matrix.main(args.hdf5_list, corr_path, args.output_matrix)
     subprocess.call(command)
 
 def make_parser():
