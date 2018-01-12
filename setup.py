@@ -24,7 +24,7 @@ setup(
     author_email = "jonathan.laperle@usherbrooke.ca",
     description = ("Tools for fast NxN correlation of whole-genome epigenomic data."),
     packages = find_packages(),
-    package_data={'': ['LICENSE', 'README.md', 'README.rst', 'epigeec/bin/*']},
+    data_files = [('epigeec': ['LICENSE', 'README.md', 'README.rst', 'epigeec/bin/*'])],
     entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:main']},
     install_requires = ["pandas", "numpy", "wheel"],
     license = "GPL",
