@@ -19,11 +19,15 @@ from setuptools import setup, find_packages
 
 setup(
     name = "epigeec",
-    version = "1.0",
+    version = "1.1",
     author = "Jonathan Laperle",
     author_email = "jonathan.laperle@usherbrooke.ca",
     description = ("Tools for fast NxN correlation of whole-genome epigenomic data."),
     packages = find_packages(),
+    package_data = {'epigeec': ['bin/bg_to_hdf5',
+                                'bin/bw_to_hdf5',
+                                'bin/correlation',
+                                'bin/filter']},
     entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:main']},
     install_requires = ["pandas", "numpy", "wheel"],
     license = "GPL",

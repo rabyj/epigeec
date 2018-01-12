@@ -28,17 +28,17 @@ def get_corr_vals(mat):
         vals + line.split()[1:]
 
 def launch_to_hdf5(exe_path, sig_path, chrom_path, resolution, hdf5_path):
-    command = [exe_path, "to_hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
+    command = ["python", exe_path, "to_hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
     logging.debug(command)
     subprocess.call(command)
 
 def launch_filter(exe_path, hdf5_path, chrom_path, resolution, filtered_path, include_path=None, exclude_path=None):
-    command = [exe_path, "filter", hdf5_path, chrom_path, resolution, filtered_path]
+    command = ["python", exe_path, "filter", hdf5_path, chrom_path, resolution, filtered_path]
     logging.debug(command)
     subprocess.call(command)
 
 def launch_corr(exe_path, list_path, chrom_path, resolution, mat_path):
-    command = [exe_path, "correlate", list_path, chrom_path, resolution, mat_path]
+    command = ["python", exe_path, "correlate", list_path, chrom_path, resolution, mat_path]
     logging.debug(command)
     subprocess.call(command)
 
