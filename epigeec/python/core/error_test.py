@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -15,20 +14,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
-import parser
 import sys
+import unittest
 
 from error import ValidationError, MultiError
 
- 
-def main():
-    try:
-        epigeec_parser = parser.make_parser()
-        args = epigeec_parser.parse_args()
-        args.func(args)
-    except (ValueError, IOError, ValidationError, MultiError) as e:
-        sys.exit(e)
 
+class ValidationErrorTest(unittest.TestCase):
+    def test_message(self):
+        err_msg = "test"
+        try:
+            raise ValidationError(err_msg)
+        except ValidationError as e:
+            self.assertEqual(str(e), err_msg)
+
+    def test_raise(self):
+        with self.assertRaises(ValidationError):
+            raise ValidationError("test")
+
+class MultiErrorTest(unittest.TestCase):
+    def test_message(self):
+        pass
+
+    def test_raise(self):
+        pass
 
 if __name__ == "__main__":
-    main()
+    unittest.main()

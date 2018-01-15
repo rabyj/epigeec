@@ -1,0 +1,78 @@
+# Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# =============================================================================
+
+import subprocess
+import sys
+
+import config
+import make_matrix
+import utils
+import validate
+
+
+def get_hdf5_converter(args):
+    if args.bigwig:
+        return config.BW_TO_HDF5_PATH
+    elif args.bedgraph:
+        return config.BG_TO_HDF5_PATH
+    else:
+        raise AssertionError("Parser failed to enforce mentatory -bw -bg")
+
+def to_hdf5(args):
+    validate.valid_to_hdf5(args)
+    exe = get_hdf5_converter(args)
+    command = [exe,
+               args.signalFile,
+               args.chromSizes,
+               args.resolution,
+               args.outHdf5]
+    subprocess.call(command)
+
+def hdf5_filter(args):
+    validate.valid_filter(args)
+    if args.select:
+        select = args.select
+    else:
+        select = utils.tmp_name()
+        utils.make_all_filter(open(select, 'w'), open(args.chromSizes))
+    if args.exclude:
+        exclude = args.exclude
+    else:
+        exclude = utils.tmp_name()
+        open(exclude, 'w')
+    command = [config.FILTER_PATH,
+                 args.hdf5,
+                 args.chromSizes,
+                 args.resolution,
+                 args.outHdf5,
+                 select,
+                 exclude]
+    subprocess.call(command)
+
+def corr(args):
+    validate.valid_corr(args)
+    corr_path = utils.tmp_name()
+    #call correlation
+    command = [config.CORR_PATH,
+                 args.hdf5List,
+                 args.chromSizes,
+                 args.resolution,
+                 corr_path]
+    subprocess.call(command)
+
+    #call make_matrix
+    make_matrix.main(args.hdf5List, corr_path, args.outMatrix)
+    subprocess.call(command)

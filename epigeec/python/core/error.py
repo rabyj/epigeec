@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -15,20 +14,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
-import parser
-import sys
+class ValidationError(Exception):
+    """Raise when validaiton fails"""
 
-from error import ValidationError, MultiError
+class MultiError(Exception):
+    """Raise multiple errors at once"""
+    def __init__(self, errors):
+        self.errors = errors
 
- 
-def main():
-    try:
-        epigeec_parser = parser.make_parser()
-        args = epigeec_parser.parse_args()
-        args.func(args)
-    except (ValueError, IOError, ValidationError, MultiError) as e:
-        sys.exit(e)
+    def __repr__(self):
+        "\n".join(self.errors())
 
-
-if __name__ == "__main__":
-    main()
+    def __str__(self):
+        return self.__repr__()

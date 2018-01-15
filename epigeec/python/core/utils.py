@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -15,20 +14,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
-import parser
-import sys
+import os
+import tempfile
 
-from error import ValidationError, MultiError
+def tmp_name():
+    fd, temp_path = tempfile.mkstemp()
+    os.close(fd)
+    os.remove(temp_path)
+    return temp_path
 
- 
-def main():
-    try:
-        epigeec_parser = parser.make_parser()
-        args = epigeec_parser.parse_args()
-        args.func(args)
-    except (ValueError, IOError, ValidationError, MultiError) as e:
-        sys.exit(e)
-
-
-if __name__ == "__main__":
-    main()
+def make_all_filter(tmp, chrom):
+    for line in chrom:
+       line = line.strip()
+       if line:
+           line = line.split()
+           tmp.write("{0}\t{1}\t{2}\n".format(line[0], "0", line[1]))
