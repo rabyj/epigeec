@@ -14,7 +14,7 @@ Linux is the only OS currently supported
 
 **Install epiGeEC**
 
-	pip install epigeec
+	sudo pip install epigeec
 
 ### How To Use
 - - - -
