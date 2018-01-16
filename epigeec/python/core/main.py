@@ -15,20 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
-import parser
 import sys
 
-from error import ValidationError, MultiError
+import parser
 
  
-def main():
-    try:
-        epigeec_parser = parser.make_parser()
-        args = epigeec_parser.parse_args()
-        args.func(args)
-    except (ValueError, IOError, ValidationError, MultiError) as e:
-        sys.exit(e)
+def main(argv):
+    args = parser.parse_args(argv)
+    args.func(args)
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

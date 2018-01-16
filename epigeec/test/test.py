@@ -19,7 +19,12 @@ import argparse
 import logging
 import os
 import os.path
-import subprocess
+import sys
+import unittest
+
+sys.path.append('..')
+import python.core.main as epimain
+import python.core.config as config
 
 def get_corr_vals(mat):
     mat.readline()
@@ -27,20 +32,67 @@ def get_corr_vals(mat):
     for line in mat:
         vals + line.split()[1:]
 
-def launch_to_hdf5(exe_path, sig_path, chrom_path, resolution, hdf5_path):
-    command = ["python", exe_path, "to_hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
-    logging.debug(command)
-    subprocess.call(command)
+def launch_to_hdf5(sig_path, chrom_path, resolution, hdf5_path):
+    args = ["to_hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
+    logging.debug(args)
+    epimain.main(args)
 
-def launch_filter(exe_path, hdf5_path, chrom_path, resolution, filtered_path, include_path=None, exclude_path=None):
-    command = ["python", exe_path, "filter", hdf5_path, chrom_path, resolution, filtered_path]
-    logging.debug(command)
-    subprocess.call(command)
+def launch_filter(hdf5_path, chrom_path, filtered_path, include_path=None, exclude_path=None):
+    args = ["filter", hdf5_path, chrom_path, filtered_path]
+    logging.debug(args)
+    epimain.main(args)
 
-def launch_corr(exe_path, list_path, chrom_path, resolution, mat_path):
-    command = ["python", exe_path, "correlate", list_path, chrom_path, resolution, mat_path]
-    logging.debug(command)
-    subprocess.call(command)
+def launch_corr(list_path, chrom_path, mat_path):
+    args = ["correlate", list_path, chrom_path, mat_path]
+    logging.debug(args)
+    epimain.main(args)
+
+class EpigeecTest(unittest.TestCase):
+    def test_e2e(self):
+        parser = argparse.ArgumentParser(description='A test script for epigeec')
+        parser.add_argument("-v", "--verbose", help="enable debug logs", action="store_true")
+
+        args = parser.parse_args()
+        if args.verbose:
+            logging.basicConfig(level=logging.DEBUG)
+
+        files_dir = os.path.join(config.TEST_DIR, "files")
+        sig_dir = os.path.join(files_dir, "signal")
+        hdf5_dir = os.path.join(files_dir, "hdf5")
+        filtered_dir = os.path.join(files_dir, "filtered")
+        chrom_dir = os.path.join(config.RES_DIR, "chrom_sizes")
+        epigeec_path = os.path.join(config.PY_DIR, "main.py")
+        list_path = os.path.join(config.TEST_DIR, "test_list.txt")
+        sig_path = [os.path.join(sig_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(sig_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        hdf5_path = [os.path.join(hdf5_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        filtered_path = [os.path.join(filtered_dir, "d9f18e91644bacfee3669d577b661d15"),
+                        os.path.join(filtered_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        mat_path = os.path.join(files_dir, "test.mat")
+        chrom_path = os.path.join(chrom_dir, "saccer3.can.chrom.sizes")
+        resolution = "10000"
+
+        with open(list_path, 'w') as test_list:
+            test_list.write("{0}\n{1}".format(filtered_path[0], filtered_path[1]))
+
+        launch_to_hdf5(sig_path[0], chrom_path, resolution, hdf5_path[0])
+        launch_to_hdf5(sig_path[1], chrom_path, resolution, hdf5_path[1])
+        launch_filter(hdf5_path[0], chrom_path, filtered_path[0])
+        launch_filter(hdf5_path[1], chrom_path, filtered_path[1])
+
+        launch_corr(list_path, chrom_path, mat_path)
+
+        result = os.path.join(files_dir, "test.mat")
+        expected = os.path.join(files_dir, "expected")
+        self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+
+        os.remove(hdf5_path[0])
+        os.remove(hdf5_path[1])
+        os.remove(filtered_path[0])
+        os.remove(filtered_path[1])
+        os.remove(list_path)
+        os.remove(mat_path)
 
 def main():
     parser = argparse.ArgumentParser(description='A test script for epigeec')
@@ -49,55 +101,15 @@ def main():
     args = parser.parse_args()
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
-
-    self_path = os.path.realpath(__file__)
-
-    test_dir = os.path.dirname(self_path)
-    files_dir = os.path.join(test_dir, "files")
-    sig_dir = os.path.join(files_dir, "signal")
-    hdf5_dir = os.path.join(files_dir, "hdf5")
-    filtered_dir = os.path.join(files_dir, "filtered")
-    epi_dir = os.path.dirname(test_dir)
-    bin_dir = os.path.join(epi_dir, "bin")
-    resource_dir = os.path.join(epi_dir, "resource")
-    chrom_dir = os.path.join(resource_dir, "chrom_sizes")
-
-    epigeec_path = os.path.join(epi_dir, "python", "core", "main.py")
-    list_path = os.path.join(test_dir, "test_list.txt")
-
-    sig_path = [os.path.join(sig_dir, "d9f18e91644bacfee3669d577b661d15"),
-                   os.path.join(sig_dir, "fd85fe6672c629a116a9b6131883a60b")]
-    hdf5_path = [os.path.join(hdf5_dir, "d9f18e91644bacfee3669d577b661d15"),
-                 os.path.join(hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
-    filtered_path = [os.path.join(filtered_dir, "d9f18e91644bacfee3669d577b661d15"),
-                     os.path.join(filtered_dir, "fd85fe6672c629a116a9b6131883a60b")]
-    mat_path = os.path.join(files_dir, "test.mat")
-    chrom_path = os.path.join(chrom_dir, "saccer3.can.chrom.sizes")
-    resolution = "10000"
-
-    with open(list_path, 'w') as test_list:
-        test_list.write("{0}\n{1}".format(filtered_path[0], filtered_path[1]))
-
-    launch_to_hdf5(epigeec_path, sig_path[0], chrom_path, resolution, hdf5_path[0])
-    launch_to_hdf5(epigeec_path, sig_path[1], chrom_path, resolution, hdf5_path[1])
-    launch_filter(epigeec_path, hdf5_path[0], chrom_path, resolution, filtered_path[0])
-    launch_filter(epigeec_path, hdf5_path[1], chrom_path, resolution, filtered_path[1])
-
-    launch_corr(epigeec_path, list_path, chrom_path, resolution, mat_path)
-
-    result = os.path.join(files_dir, "test.mat")
-    expected = os.path.join(files_dir, "expected")
-    if get_corr_vals(open(result)) == get_corr_vals(open(expected)):
-        print "Success"
-    else:
-        print "Failed"
-
-    os.remove(hdf5_path[0])
-    os.remove(hdf5_path[1])
-    os.remove(filtered_path[0])
-    os.remove(filtered_path[1])
-    os.remove(list_path)
-    os.remove(mat_path)
+    
+    py_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "python", "core")
+    loader = unittest.TestLoader()
+    suites = []
+    suites.append(loader.discover(py_dir, pattern = "*_test.py"))
+    suites.append(loader.loadTestsFromTestCase(EpigeecTest))
+    suite = unittest.TestSuite(suites)
+    runner = unittest.TextTestRunner()
+    runner.run(suite)
 
 
 if __name__ == "__main__":

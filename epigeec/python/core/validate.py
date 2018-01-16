@@ -19,6 +19,7 @@ import itertools
 import struct
 
 from error import ValidationError, MultiValidationError
+import utils
 
 
 def valid_to_hdf5(args):
@@ -26,15 +27,16 @@ def valid_to_hdf5(args):
     args.signalFile
     args.chromSizes
     """
-    if args.bigWig:
+    if args.bigwig:
         valid_bw(args.signalFile)
-    elif args.bedGraph:
+    elif args.bedgraph:
         valid_bg(args.signalFile)
     else:
         raise AssertionError("Parser failed to enforce mentatory -bw -bg")
     valid_chromsizes(args.chromSizes)
+    valid_resolution(args.resolution)
 
-def valid_filter(args, select, exclude):
+def valid_filter(args):
     """
     args.hdf5
     args.chromSizes
@@ -88,18 +90,24 @@ def valid_hdf5(path):
 def valid_chromsizes(path):
     return valid_file(path, "chrom.sizes" , is_chromsizes)
 
+def valid_resolution(res):
+    if not res > 0:
+        raise ValidationError("Resolution must be a strictly positive integer.")
+
 def is_hdf5_list(path):
     errors = []
+    compat_data = {}
     with open(path) as hdf5_list:
         for line in hdf5_list:
             line = line.strip()
             if line:
                 try:
-                    valid_hdf5(path)
+                    valid_hdf5(line)
                 except (IOError, ValidationError) as e:
                     errors.append(e)
     if errors:
-        raise MultiError(errors)
+        raise MultiValidationError(errors)
+    return True
 
 def is_bed(path):
     with open(path) as bed:
@@ -129,7 +137,7 @@ def is_bg(path):
 def is_chromsizes(path):
     with open(path) as chroms:
         for line in chroms:
-            line = chroms.next().strip()
+            line = line.strip()
             if line:
                 line = line.split()
                 if not len(line) >= 2: return False
@@ -139,7 +147,7 @@ def is_chromsizes(path):
 def is_bw(path):
     bw_magic = 0x888FFC26
     with open(path, "rb") as bw:
-        magic = struct.unpack("I", bw.read(4))
+        magic = struct.unpack("I", bw.read(4))[0] 
         if magic != bw_magic:
             return False
     return True

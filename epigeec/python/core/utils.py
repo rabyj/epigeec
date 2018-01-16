@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
+import h5py
 import os
 import tempfile
 
@@ -29,3 +30,22 @@ def make_all_filter(tmp, chrom):
        if line:
            line = line.split()
            tmp.write("{0}\t{1}\t{2}\n".format(line[0], "0", line[1]))
+
+def read_compatibility_data(hdf5_path, chrom_path):
+    compatibility_data = {}
+    f = h5py.File(hdf5_path, "r")
+    compatibility_data["bin"] = f.attrs.get("bin")[0]
+    for chrom in read_chrom_sizes(chrom_path).keys():
+        size = f["dataset"].get(chrom, 0).shape[0]
+        if size:
+            compatibility_data[chrom] = size
+    return compatibility_data
+
+def read_chrom_sizes(chrom_path):
+    chroms = {}
+    for line in open(chrom_path):
+        line.strip()
+        if line:
+            line = line.split()
+            chroms[line[0]] = line[1]
+    return chroms

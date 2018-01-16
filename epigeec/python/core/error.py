@@ -17,13 +17,13 @@
 class ValidationError(Exception):
     """Raise when validaiton fails"""
 
-class MultiError(Exception):
+class MultiValidationError(Exception):
     """Raise multiple errors at once"""
     def __init__(self, errors):
         self.errors = errors
 
     def __repr__(self):
-        "\n".join(self.errors())
+        return "\n"+"\n".join([str(e) for e in self.errors])
 
     def __str__(self):
         return self.__repr__()

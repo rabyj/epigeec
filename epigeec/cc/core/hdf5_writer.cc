@@ -24,11 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Hdf5Writer::Hdf5Writer(const std::string& file_path){
   file_path_ = file_path;
-  if (FileExists(file_path)) {
-    file_id_ = Open();
-  } else {
-    file_id_ = Create();
-  }
+  file_id_ = Create();
 }
 
 void Hdf5Writer::AddDataset(const std::string& name,
@@ -52,13 +48,9 @@ void Hdf5Writer::AddDataset(Hdf5Dataset& hdf5_dataset) {
   std::string chr_name = split_path.second;
 
   if (IsValid(file_name)) {
-    if (IsValid(path)) {
-      std::cout << "WARNING: "<< path<< " already exists"<< std::endl;
-    } else {
-      AddDataset("/" + path, size, data);
-      SetSumX("/" + path, hdf5_dataset.sumX());
-      SetSumXX("/" + path, hdf5_dataset.sumXX());
-    }
+    AddDataset("/" + path, size, data);
+    SetSumX("/" + path, hdf5_dataset.sumX());
+    SetSumXX("/" + path, hdf5_dataset.sumXX());
   } else {
     CreateGroup(file_name);
     AddDataset("/" + path, size, data);

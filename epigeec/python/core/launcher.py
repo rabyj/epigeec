@@ -22,6 +22,15 @@ import make_matrix
 import utils
 import validate
 
+def get_resolution(args):
+    try:
+        hdf5_path = args.hdf5
+    except AttributeError:
+        try:
+            hdf5_path = open(args.hdf5List).readline().strip()
+        except AttributeError:
+            raise AssertionError("get_resolution called outside of filter or correlation mode")
+    return str(utils.read_compatibility_data(hdf5_path, args.chromSizes)["bin"])
 
 def get_hdf5_converter(args):
     if args.bigwig:
@@ -37,7 +46,7 @@ def to_hdf5(args):
     command = [exe,
                args.signalFile,
                args.chromSizes,
-               args.resolution,
+               str(args.resolution),
                args.outHdf5]
     subprocess.call(command)
 
@@ -54,12 +63,12 @@ def hdf5_filter(args):
         exclude = utils.tmp_name()
         open(exclude, 'w')
     command = [config.FILTER_PATH,
-                 args.hdf5,
-                 args.chromSizes,
-                 args.resolution,
-                 args.outHdf5,
-                 select,
-                 exclude]
+               args.hdf5,
+               args.chromSizes,
+               get_resolution(args),
+               args.outHdf5,
+               select,
+               exclude]
     subprocess.call(command)
 
 def corr(args):
@@ -69,7 +78,7 @@ def corr(args):
     command = [config.CORR_PATH,
                  args.hdf5List,
                  args.chromSizes,
-                 args.resolution,
+                 get_resolution(args),
                  corr_path]
     subprocess.call(command)
 

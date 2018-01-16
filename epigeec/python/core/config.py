@@ -18,8 +18,11 @@ import os.path
 
 VERSION = "1.2"
 
-EPI_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+PY_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+EPI_DIR = os.path.dirname(PY_DIR)
+TEST_DIR = os.path.join(EPI_DIR, "test")
 BIN_DIR = os.path.join(EPI_DIR, "bin")
+RES_DIR = os.path.join(EPI_DIR, "resource")
 BW_TO_HDF5_PATH = os.path.join(BIN_DIR, "bw_to_hdf5")
 BG_TO_HDF5_PATH = os.path.join(BIN_DIR, "bg_to_hdf5")
 FILTER_PATH = os.path.join(BIN_DIR, "filter")

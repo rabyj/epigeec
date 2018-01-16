@@ -17,7 +17,7 @@
 import sys
 import unittest
 
-from error import ValidationError, MultiError
+from error import ValidationError, MultiValidationError
 
 
 class ValidationErrorTest(unittest.TestCase):
@@ -32,12 +32,23 @@ class ValidationErrorTest(unittest.TestCase):
         with self.assertRaises(ValidationError):
             raise ValidationError("test")
 
-class MultiErrorTest(unittest.TestCase):
+class MultiValidationErrorTest(unittest.TestCase):
     def test_message(self):
-        pass
+        err_msg = "\ntest"
+        try:
+            try:
+                raise ValidationError("test")
+            except ValidationError as e:
+                raise MultiValidationError([e])
+        except MultiValidationError as e:
+            self.assertEqual(str(e), err_msg)
 
     def test_raise(self):
-        pass
+        with self.assertRaises(MultiValidationError):
+            try:
+                raise ValidationError("test")
+            except ValidationError as e:
+                raise MultiValidationError([e])
 
 if __name__ == "__main__":
     unittest.main()

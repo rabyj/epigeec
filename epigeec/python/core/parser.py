@@ -19,7 +19,7 @@ import argparse
 import launcher
 import config
 
-def make_parser():
+def parse_args(args):
     parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
     parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(config.VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.")
@@ -38,7 +38,6 @@ def make_parser():
     parser_filter.set_defaults(func=launcher.hdf5_filter)
     parser_filter.add_argument("hdf5", help="The HDF5 file to be filtered. (TEXT)")
     parser_filter.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
-    parser_filter.add_argument("resolution", type=int, help="The resolution of the binning in base pair (1kb suggested for human). (INTEGER)")
     parser_filter.add_argument("outHdf5", help="The output file. (TEXT)")
     parser_filter.add_argument("--select", "-s", help="The file in BED format containing the regions to select, others are ignored. In case a region is both selected and excluded, the exclusion dominates. (TEXT)")
     parser_filter.add_argument("--exclude", "-e", help="The file in BED format containing the regions to exclude.")
@@ -47,7 +46,6 @@ def make_parser():
     parser_corr.set_defaults(func=launcher.corr)
     parser_corr.add_argument("hdf5List", help="The list of HDF5 files to correlate, one file per line. (TEXT)")
     parser_corr.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
-    parser_corr.add_argument("resolution", type=int, help="The resolution of the binning in base pair (1kb suggested for human). (INTEGER)")
     parser_corr.add_argument("outMatrix", help="The final tab-delimited matrix file. (TEXT)")
 
-    return parser
+    return parser.parse_args(args)
