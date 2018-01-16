@@ -17,9 +17,11 @@
 import os.path
 from setuptools import setup, find_packages
 
+import epigeec.python.core.config as config
+
 setup(
     name = "epigeec",
-    version = "1.1",
+    version = config.VERSION,
     author = "Jonathan Laperle",
     author_email = "jonathan.laperle@usherbrooke.ca",
     description = ("Tools for fast NxN correlation of whole-genome epigenomic data."),
@@ -29,7 +31,7 @@ setup(
                                 'bin/correlation',
                                 'bin/filter']},
     entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:main']},
-    install_requires = ["pandas", "numpy", "wheel"],
+    install_requires = ["pandas", "numpy", "wheel", "h5py"],
     license = "GPL",
     python_requires = '>=2.6, <3',
     long_description = open("README.rst").read()

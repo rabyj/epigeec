@@ -16,50 +16,14 @@
 
 import os.path
 
-#directories
-MODULE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+VERSION = "1.2"
 
-#executables
-def exec_path(exec_name):
-    return os.path.join(os.path.dirname(MODULE_DIR), 'bin', exec_name)
-
-BW_TO_HDF5 = exec_path('bw_to_hdf5')
-BG_TO_HDF5 = exec_path('bg_to_hdf5')
-FILTER = exec_path('filter')
-CORRELATION = exec_path('correlation')
-MAKE_MATRIX = exec_path('make_matrix')
-
-#chrom sizes
-def chrom_sizes_path_maker(filename):
-    return os.path.join(os.path.dirname(MODULE_DIR),'resource','chrom_sizes',filename)
-
-def get_chrom_sizes(assembly):
-    assembly = assembly.lower()
-    if assembly != 'saccer3':
-        assembly = assembly + '.noy'
-    else:
-        assembly = assembly + '.can'
-    filename = '{0}.chrom.sizes'.format(assembly)
-    return chrom_sizes_path_maker(filename)
-
-#regions
-def region_path_maker(filename):
-    return os.path.join(os.path.dirname(MODULE_DIR), 'resource', 'filter', filename)
-
-def get_region(assembly, content):
-    if content == 'none':
-        return region_path_maker('none.bed')
-    filename = "{0}.{1}.bed".format(assembly.lower(), content.lower())
-    return region_path_maker(filename)
-
-def get_resolution(num):
-    to_human = {1:"1bp",
-                10:"10bp",
-                100: "100bp",
-                1000: "1kb",
-                10000: "10kb",
-                100000: "100kb",
-                1000000: "1mb",
-                10000000: "10mb",
-                100000000: "100mb"}
-    return to_human[int(num)]
+PY_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+EPI_DIR = os.path.dirname(PY_DIR)
+TEST_DIR = os.path.join(EPI_DIR, "test")
+BIN_DIR = os.path.join(EPI_DIR, "bin")
+RES_DIR = os.path.join(EPI_DIR, "resource")
+BW_TO_HDF5_PATH = os.path.join(BIN_DIR, "bw_to_hdf5")
+BG_TO_HDF5_PATH = os.path.join(BIN_DIR, "bg_to_hdf5")
+FILTER_PATH = os.path.join(BIN_DIR, "filter")
+CORR_PATH = os.path.join(BIN_DIR, "correlation")

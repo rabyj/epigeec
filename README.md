@@ -31,11 +31,11 @@ Conversion of a signal file to the hdf5 format
 
 Filter an hdf5 file (optional)  
 
-	usage: epigeec filter [-h] [--select SELECT] [--exclude EXCLUDE] hdf5 chromSizes resolution outHdf5
+	usage: epigeec filter [-h] [--select SELECT] [--exclude EXCLUDE] hdf5 chromSizes outHdf5
 
 Generate an NxN Pearson correlation matrix  
 
-	usage: epigeec correlate [-h] hdf5List chromSizes resolution outMatrix 
+	usage: epigeec correlate [-h] hdf5List chromSizes outMatrix 
   
 ‌‌   
 List of assemblies and filters offered in the [resource](epigeec/resource) folder:
@@ -69,8 +69,8 @@ Create a directory structure to hold the data
 Start running the tools
 
 	epigeec -bw signal/myfile.bw chrom_sizes 10000 hdf5/myfile.hdf5
-	epigeec hdf5/myfile.hdf5 resource/chrom_sizes 10000 filtered/myfile.hdf5 -s sel.bed -e exc.bed
-	epigeec filtered_list resource/chrom_sizes 10000 mymatrix.mat  
+	epigeec hdf5/myfile.hdf5 resource/chrom_sizes filtered/myfile.hdf5 -s sel.bed -e exc.bed
+	epigeec filtered_list resource/chrom_sizes mymatrix.mat  
 
 The output is a tab separated matrix file with your correlations
 
