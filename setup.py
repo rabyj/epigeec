@@ -37,6 +37,6 @@ setup(
     entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:cli']},
     install_requires = ["pandas", "numpy", "wheel", "h5py", "future"],
     license = "GPL",
-    python_requires = '>=2.7, <3.0',
+    python_requires = '>=2.7',
     long_description = open("README.rst").read()
 )
