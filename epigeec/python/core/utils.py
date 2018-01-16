@@ -14,6 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
+from __future__ import absolute_import, division, print_function
+
+#supress h5py warning
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 import h5py
 import os
 import tempfile
