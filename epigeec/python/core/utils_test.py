@@ -18,8 +18,8 @@
 import os.path
 import unittest
 
-import config
-import utils
+from python.core import config
+from python.core import utils
 
 
 class UtilsTest(unittest.TestCase):

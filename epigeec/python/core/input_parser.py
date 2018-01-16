@@ -16,8 +16,8 @@
 
 import argparse
 
-import launcher
-import config
+from . import launcher
+from . import config
 
 def parse_args(args):
     parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
