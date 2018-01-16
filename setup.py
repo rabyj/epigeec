@@ -33,7 +33,7 @@ setup(
                                 'test/files/signal/d9f18e91644bacfee3669d577b661d15',
                                 'test/files/signal/fd85fe6672c629a116a9b6131883a60b',
                                 'test/files/hdf5/test.hdf5',
-                                'resources/chrom_sizes/saccer3.can.chrom.sizes',]},
+                                'resource/chrom_sizes/saccer3.can.chrom.sizes',]},
     entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:cli']},
     install_requires = ["pandas", "numpy", "wheel", "h5py", "future"],
     license = "GPL",
