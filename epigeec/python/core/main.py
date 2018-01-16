@@ -17,9 +17,10 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os.path
 import sys
-import warnings
 
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import input_parser
 
 

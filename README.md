@@ -10,13 +10,11 @@ Linux is the only OS currently supported
 
 **Install dependencies**
 
-Requires python2.7
-
 	sudo apt-get install libhdf5-dev libssl-dev boost
 
 **Install epiGeEC**
 
-	sudo pip install epigeec
+	pip install epigeec
 
 ### How To Use
 - - - -
