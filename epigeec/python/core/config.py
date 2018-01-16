@@ -16,7 +16,7 @@
 
 import os.path
 
-VERSION = "1.3"
+VERSION = "1.3.1"
 
 PY_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 EPI_DIR = os.path.dirname(PY_DIR)

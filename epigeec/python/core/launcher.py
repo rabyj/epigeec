@@ -17,10 +17,10 @@
 import subprocess
 import sys
 
-from python.core import config
-from python.core import make_matrix
-from python.core import utils
-from python.core import validate
+import config
+import make_matrix
+import utils
+import validate
 
 def get_resolution(args):
     try:

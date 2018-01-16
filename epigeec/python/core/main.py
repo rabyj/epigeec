@@ -18,13 +18,15 @@
 import sys
 import warnings
 
-from python.core import input_parser
+import input_parser
 
- 
+
 def main(argv):
     args = input_parser.parse_args(argv)
     args.func(args)
 
+def cli():
+    main(sys.argv[1:])
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+     cli()

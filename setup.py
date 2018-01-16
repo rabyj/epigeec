@@ -30,9 +30,9 @@ setup(
                                 'bin/bw_to_hdf5',
                                 'bin/correlation',
                                 'bin/filter']},
-    entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:main']},
+    entry_points = {'console_scripts': ['epigeec = epigeec.python.core.main:cli']},
     install_requires = ["pandas", "numpy", "wheel", "h5py"],
     license = "GPL",
-    python_requires = '>=2.7',
+    python_requires = '>=2.7, <3.0',
     long_description = open("README.rst").read()
 )

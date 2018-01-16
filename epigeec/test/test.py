@@ -24,8 +24,8 @@ import unittest
 import warnings
 
 sys.path.append('..')
-import python.core.main as epimain
-import python.core.config as config
+import epigeec.python.core.main as epimain
+import epigeec.python.core.config as config
 
 def get_corr_vals(mat):
     mat.readline()

@@ -18,8 +18,8 @@ import h5py
 import itertools
 import struct
 
-from python.core.error import ValidationError, MultiValidationError
-from python.core import utils
+from error import ValidationError, MultiValidationError
+import utils
 
 
 def valid_to_hdf5(args):
