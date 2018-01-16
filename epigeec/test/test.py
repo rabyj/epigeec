@@ -23,9 +23,10 @@ import sys
 import unittest
 import warnings
 
-sys.path.append('..')
-import python.core.main as epimain
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import python.core.config as config
+sys.path.append(config.CORE_DIR)
+import python.core.main as epimain
 
 def get_corr_vals(mat):
     mat.readline()

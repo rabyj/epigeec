@@ -16,9 +16,10 @@
 
 import os.path
 
-VERSION = "1.3.1"
+VERSION = "1.3.2"
 
-PY_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+CORE_DIR = os.path.dirname(os.path.realpath(__file__))
+PY_DIR = os.path.dirname(CORE_DIR)
 EPI_DIR = os.path.dirname(PY_DIR)
 TEST_DIR = os.path.join(EPI_DIR, "test")
 BIN_DIR = os.path.join(EPI_DIR, "bin")
