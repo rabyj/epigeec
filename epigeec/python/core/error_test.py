@@ -17,7 +17,7 @@
 import sys
 import unittest
 
-from error import ValidationError, MultiValidationError
+from python.core.error import ValidationError, MultiValidationError
 
 
 class ValidationErrorTest(unittest.TestCase):

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,13 @@
 # =============================================================================
 
 import sys
+import warnings
 
-import parser
+from python.core import input_parser
 
  
 def main(argv):
-    args = parser.parse_args(argv)
+    args = input_parser.parse_args(argv)
     args.func(args)
 
 

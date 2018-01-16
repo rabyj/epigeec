@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import os
 import os.path
 import sys
 import unittest
+import warnings
 
 sys.path.append('..')
 import python.core.main as epimain
