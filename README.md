@@ -8,10 +8,6 @@ A galaxy implementation including thousands of pre-computed public datasets is a
 - - - -
 Linux is the only OS currently supported
 
-**Install dependencies**
-
-	sudo apt-get install libhdf5-dev libssl-dev libboost-dev
-
 **Install epiGeEC**
 
 	sudo pip install epigeec
