@@ -10,7 +10,7 @@ Linux is the only OS currently supported
 
 **Install dependencies**
 
-	sudo apt-get install libhdf5-dev libssl-dev boost
+	sudo apt-get install libhdf5-dev libssl-dev libboost-dev
 
 **Install epiGeEC**
 
