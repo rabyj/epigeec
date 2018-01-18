@@ -22,7 +22,7 @@ import sys
 import config
 import make_matrix
 import utils
-import validate
+import validators
 
 def get_resolution(args):
     try:
@@ -43,7 +43,7 @@ def get_hdf5_converter(args):
         raise AssertionError("Parser failed to enforce mentatory -bw -bg")
 
 def to_hdf5(args):
-    validate.valid_to_hdf5(args)
+    validators.valid_to_hdf5(args)
     exe = get_hdf5_converter(args)
     command = [exe,
                args.signalFile,
@@ -53,7 +53,7 @@ def to_hdf5(args):
     subprocess.call(command)
 
 def hdf5_filter(args):
-    validate.valid_filter(args)
+    validators.valid_filter(args)
     if args.select:
         select = args.select
     else:
@@ -74,7 +74,7 @@ def hdf5_filter(args):
     subprocess.call(command)
 
 def corr(args):
-    validate.valid_corr(args)
+    validators.valid_corr(args)
     corr_path = utils.tmp_name()
     #call correlation
     command = [config.CORR_PATH,
