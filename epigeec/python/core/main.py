@@ -17,12 +17,15 @@
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import os.path
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import input_parser
+import config
 
+os.environ['LD_LIBRARY_PATH'] = config.LIB_DIR
 
 def main(argv):
     args = input_parser.parse_args(argv)
