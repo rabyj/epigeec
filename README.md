@@ -16,7 +16,9 @@ You will need pip to install the python package, use the following command if no
 	
 Pip will attempt to install all dependencies but most likely will fail
 
-See documentation for [pandas](https://github.com/svaksha/PyData-Workshop-Sprint/wiki/linux-install-pandas) and [h5py](http://docs.h5py.org/en/latest/build.html).
+See documentation on how to install [pandas](https://github.com/svaksha/PyData-Workshop-Sprint/wiki/linux-install-pandas) and [h5py](http://docs.h5py.org/en/latest/build.html).
+
+	sudo pip install pandas h5py
 
 **Install epiGeEC**
 
