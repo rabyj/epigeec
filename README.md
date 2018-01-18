@@ -10,7 +10,7 @@ Linux/x64 is the only OS currently supported
 
 **Dependencies**
 
-All python dependencies will be automatilly installed by pip. However, h5py requires the HDF5 libs to be available, those can be obtained on most Linux distributions with  
+All python dependencies will be automatically installed by pip. However, h5py requires the HDF5 libs to be available, those can be obtained on most Linux distributions with  
 
 	sudo apt-get libhdf5-dev
 	
