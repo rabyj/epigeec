@@ -20,6 +20,10 @@ See documentation on how to install [pandas](https://github.com/svaksha/PyData-W
 
 	sudo pip install pandas h5py
 
+You might have more success with
+
+	sudo apt-get python-h5py python-pandas
+
 **Install epiGeEC**
 
 	sudo pip install epigeec  
