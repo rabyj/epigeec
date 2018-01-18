@@ -33,10 +33,11 @@ they are not nessessarily actual files
 #include "hdf5_dataset_factory.h"
 #include "hdf5_reader.h"
 #include "input_list.h"
+#include "hdf5.h"
 
 void write_entry(std::ofstream& output_file,
                  std::string& name,
-                 std::map<std::string, float>& result) {
+                 std::map<std::string, double>& result) {
   std::string output_line = name;
   for (const auto& chrom : result) {
     output_line += "\t" + chrom.first + "," +  std::to_string(chrom.second);
@@ -54,12 +55,13 @@ int main(int argc, const char * argv[]) {
 
   if (argc < 4) {
     printf("Usage: correlation {input_list} "
-                         "{chrom_sizes} "
-                         "{bin_size}"
-                         "{output.results}\n");
+                              "{chrom_sizes} "
+                              "{bin_size}"
+                              "{output.results}\n");
     return 1;
   }
 
+  H5Eset_auto(NULL, NULL, NULL);
   list_path = argv[1];
   chrom_path = argv[2];
   bin = std::stoi(argv[3], NULL, 10);
@@ -79,7 +81,7 @@ int main(int argc, const char * argv[]) {
       Hdf5Reader hdf5_reader = Hdf5Reader(input_list[i].first);
       data.emplace(input_list[i].first, new GenomicDataset(input_list[i].first));
       for (const std::string& chrom : chroms) {
-        std::string name = input_list[i].second + "/" + chrom;
+        std::string name = hdf5_reader.GetSignal() + "/" + chrom;
         if (hdf5_reader.IsValid(name)) {
           hdf5_dataset = hdf5_reader.GetDataset(name, bin);
           data[input_list[i].first]->add_chromosome(chrom, hdf5_dataset);
@@ -109,7 +111,7 @@ int main(int argc, const char * argv[]) {
   output_file << sizes << std::endl;
 
   std::string first, second;
-  std::map<std::string, float> result;
+  std::map<std::string, double> result;
 
   #pragma omp parallel for private(first, second, result)
   for (uint64_t i = 0; i < pairs.size(); ++i) {

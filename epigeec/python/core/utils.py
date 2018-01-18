@@ -40,9 +40,10 @@ def make_all_filter(tmp, chrom):
 def read_compatibility_data(hdf5_path, chrom_path):
     compatibility_data = {}
     f = h5py.File(hdf5_path, "r")
-    compatibility_data["bin"] = f.attrs.get("bin")[0]
+    compatibility_data["bin"] = f.attrs["bin"][0]
+    name = f.attrs["signal_filename"]
     for chrom in read_chrom_sizes(chrom_path).keys():
-        size = f["dataset"].get(chrom, 0).shape[0]
+        size = f[name].get(chrom, 0).shape[0]
         if size:
             compatibility_data[chrom] = size
     return compatibility_data

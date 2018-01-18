@@ -28,15 +28,16 @@ Hdf5Reader::Hdf5Reader(const std::string& file_path) {
 
 Hdf5Dataset* Hdf5Reader::GetDataset(std::string& name, int bin) {
   // get dimensions
-  hsize_t dims;
+  hsize_t dims = 0;
   H5T_class_t class_id;
-  size_t type_size;
+  size_t type_size = 0;
   H5LTget_dataset_info(file_id_, name.c_str(), &dims, &class_id, &type_size);
   // get data
   std::vector<float> data;
   data.reserve(dims);
   data.resize(dims);
-  H5LTread_dataset_float(file_id_, name.c_str(), &data[0]);
+  int check = H5LTread_dataset_float(file_id_, name.c_str(), &data[0]);
+  //std::cout<< "check: " << check<< std::endl;
   Hdf5Dataset* hdf5_dataset = new Hdf5Dataset(name, data, bin, GetSumX(name), GetSumXX(name));
   return hdf5_dataset;
 }
@@ -45,32 +46,39 @@ GenomicDataset* Hdf5Reader::GetGenomicDataset(std::string& name, std::vector<std
   GenomicDataset* data = new GenomicDataset(name);
   for (std::string chrom : chroms) {
     std::string path = name + "/" + chrom;
+    //std::cout<< path<< std::endl;
     Hdf5Dataset* dataset = GetDataset(path, bin);
     data->add_chromosome(chrom, dataset);
   }
   return data;
 }
 
-float Hdf5Reader::GetSumX(const std::string& name) {
-  float sumX;
+double Hdf5Reader::GetSumX(const std::string& name) {
+  double sumX = 0;
   std::string attr_name = "sumX";
-  H5LTget_attribute_float(file_id_, name.c_str(), attr_name.c_str(), &sumX);
+  H5LTget_attribute_double(file_id_, name.c_str(), attr_name.c_str(), &sumX);
+  //std::cout<< "sumX: " << sumX<< std::endl;
   return sumX;
 }
 
-float Hdf5Reader::GetSumXX(const std::string& name) {
-  float sumXX;
+double Hdf5Reader::GetSumXX(const std::string& name) {
+  double sumXX = 0;
   std::string attr_name = "sumXX";
-  H5LTget_attribute_float(file_id_, name.c_str(), attr_name.c_str(), &sumXX);
+  H5LTget_attribute_double(file_id_, name.c_str(), attr_name.c_str(), &sumXX);
   return sumXX;
 }
 
-std::string Hdf5Reader::GetHash() {
-  std::string hash;
-  hash.resize(50);
-  std::string attr_name = "hash";
-  H5LTget_attribute_string(file_id_, "/", attr_name.c_str(), &hash[0]);
-  return hash;
+std::string Hdf5Reader::GetSignal() {
+  std::string attr_name = "signal_filename";
+  std::string value;
+  hsize_t dims = 0; 
+  H5T_class_t type_class;
+  size_t type_size = 0;
+  H5LTget_attribute_info(file_id_, "/", attr_name.c_str(), &dims, &type_class, &type_size);
+  value.resize(type_size);
+  H5LTget_attribute_string(file_id_, "/", attr_name.c_str(), &value[0]);
+  value.pop_back();
+  return value;
 }
 
 bool Hdf5Reader::IsValid(const std::string& path) {

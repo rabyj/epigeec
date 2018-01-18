@@ -33,15 +33,16 @@ class Hdf5Dataset {
               int bin);
   Hdf5Dataset(const std::string& name,
               const std::vector<float>& content,
-              int bin, float sumX, float sumXX);
+              int bin, double sumX, double sumXX);
   ~Hdf5Dataset() {}
   void FeedDataLine(const GenomicDataLine& token);
   std::string name() {return name_;}
   unsigned int size() {return size_;}
-  float sumX() {return sumX_;}
-  float sumXX() {return sumXX_;}
+  double sumX() {return sumX_;}
+  double sumXX() {return sumXX_;}
   void NormaliseContent();
   void ToZScore();
+  void UpdateSum();
   void filter(const boost::dynamic_bitset<>& filter) {
     if (filter.size() != size_) {
          std::stringstream error_msg; 
@@ -49,8 +50,8 @@ class Hdf5Dataset {
          throw std::runtime_error(error_msg.str());
     }
     std::vector<float> new_content;
-    float new_sumX = 0;
-    float new_sumXX = 0;
+    double new_sumX = 0;
+    double new_sumXX = 0;
     for (unsigned int i = 0; i < size_; ++i) {
       if (filter[i]){
         new_content.push_back(content_[i]);
@@ -64,15 +65,15 @@ class Hdf5Dataset {
     sumXX_ = new_sumXX;
   }
   std::vector<float>& GetContent();
-  float GetPearson(Hdf5Dataset& hdf5_dataset);
+  double GetPearson(Hdf5Dataset& hdf5_dataset);
   void print() const;
  private:
   std::string name_;
   unsigned int size_;
   int bin_;
   std::vector<float> content_;
-  float sumX_;
-  float sumXX_;
+  double sumX_;
+  double sumXX_;
 };
 
 std::vector<float>& zscore(std::vector<float> &v);
