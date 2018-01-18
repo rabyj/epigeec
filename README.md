@@ -10,11 +10,11 @@ Linux/x64 is the only OS currently supported
 
 **Dependencies**
 
-You will need pip to install the python package use the following command if not already installed
+You will need pip to install the python package, use the following command if not already installed
 
 	sudo apt-get python-pip
 
-All python dependencies will be automatically installed by pip. However, h5py requires the python and HDF5 libs to be available, those can be obtained on most Linux distributions with  
+The h5py package requires the python and HDF5 libs to be available, those can be obtained on most Linux distributions with  
 
 	sudo apt-get libhdf5-dev python-dev
 	
