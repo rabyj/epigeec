@@ -12,13 +12,16 @@ Linux/x64 is the only OS currently supported
 
 You will need pip to install the python package, use the following command if not already installed
 
-	sudo apt-get python-pip
+	sudo apt-get python-pip  
+	
+Pip will attempt to install all dependencies but most likely will fail
+
+See documentation for [pandas](https://github.com/svaksha/PyData-Workshop-Sprint/wiki/linux-install-pandas) and [h5py](http://docs.h5py.org/en/latest/build.html).
 
 **Install epiGeEC**
 
-	sudo pip install epigeec
-	
-epiGeEC depends on the h5py package which can be difficult to install depending on your platform. See [this webpage](http://docs.h5py.org/en/latest/build.html) for help.
+	sudo pip install epigeec  
+
 
 ### How To Use
 - - - -
