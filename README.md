@@ -18,7 +18,7 @@ You will need pip to install the python package, use the following command if no
 
 	sudo pip install epigeec
 	
-epiGeEC depends on the h5py package which can be difficult to install depending on your platform see [this webpage](http://docs.h5py.org/en/latest/build.html) for help.
+epiGeEC depends on the h5py package which can be difficult to install depending on your platform. See [this webpage](http://docs.h5py.org/en/latest/build.html) for help.
 
 ### How To Use
 - - - -
