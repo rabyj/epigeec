@@ -18,7 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 import os.path
 
-VERSION = "1.3.5"
+VERSION = "1.3.6"
 
 CORE_DIR = os.path.dirname(os.path.realpath(__file__))
 PY_DIR = os.path.dirname(CORE_DIR)
