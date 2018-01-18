@@ -39,13 +39,14 @@ Hdf5Dataset::Hdf5Dataset(const std::string& name,
   content_ = content;
   size_ = content.size();
   bin_ = bin;
+  UpdateSum();
 }
 
 Hdf5Dataset::Hdf5Dataset(const std::string& name,
                          const std::vector<float>& content,
                          int bin,
-                         float sumX,
-                         float sumXX) {
+                         double sumX,
+                         double sumXX) {
   name_ = name;
   content_ = content;
   size_ = content.size();
@@ -83,6 +84,17 @@ void Hdf5Dataset::NormaliseContent() {
   content_[last_index] /= bin_;
   sumX_ += content_[last_index];
   sumXX_ += content_[last_index] * content_[last_index];
+}
+
+void Hdf5Dataset::UpdateSum() {
+  double new_sumX = 0;
+  double new_sumXX = 0;
+  for (unsigned int i = 0; i < size_; ++i) {
+    new_sumX += content_[i];
+    new_sumXX += content_[i] * content_[i];
+  }
+  sumX_ = new_sumX;
+  sumXX_ = new_sumXX;
 }
 
 void Hdf5Dataset::ToZScore() {
@@ -126,7 +138,7 @@ std::vector<float>& zscore(std::vector<float> &v) {
     return v;
 }
 
-float Hdf5Dataset::GetPearson(Hdf5Dataset& hdf5_dataset) {
+double Hdf5Dataset::GetPearson(Hdf5Dataset& hdf5_dataset) {
   //TODO: find out why the sumXX and sumYY in the hdf5 are sometimes wrong
   //assert(size_ == hdf5_dataset.size());
   if (!(size_ == hdf5_dataset.size())) {
@@ -135,28 +147,28 @@ float Hdf5Dataset::GetPearson(Hdf5Dataset& hdf5_dataset) {
   std::vector<float>& v1 = content_;
   std::vector<float>& v2 = hdf5_dataset.GetContent();
 
-  float sumXY = 0;
+  double sumXY = 0;
 
   //float sumX = sumX_;
-  float sumX = 0;
-  float sumXX = 0;
+  double sumX = sumX_;
+  double sumXX = sumXX_;
 
   //float sumY = hdf5_dataset.sumX();
-  float sumY = 0;
-  float sumYY = 0;
+  double sumY = hdf5_dataset.sumX();
+  double sumYY = hdf5_dataset.sumXX();
 
-  float r;
+  double r;
 
   for (unsigned int i = 0; i < size_; ++i) {
     sumXY += v1[i] * v2[i];
-    sumXX += v1[i] * v1[i];
-    sumYY += v2[i] * v2[i];
-    sumX += v1[i];
-    sumY += v2[i];
+    //sumXX += v1[i] * v1[i];
+    //sumYY += v2[i] * v2[i];
+    //sumX += v1[i];
+    //sumY += v2[i];
   }
 
-  float num = sumXY - (sumX * sumY / size_);
-  float denum = (sumXX - pow(sumX, 2) / size_) * (sumYY - pow(sumY, 2) / size_);
+  double num = sumXY - (sumX * sumY / size_);
+  double denum = (sumXX - pow(sumX, 2) / size_) * (sumYY - pow(sumY, 2) / size_);
   r = num / pow(denum, 0.5);
   return r;
 }

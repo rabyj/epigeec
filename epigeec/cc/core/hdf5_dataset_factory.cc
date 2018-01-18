@@ -29,6 +29,7 @@ Hdf5Dataset* Hdf5DatasetFactory::createHdf5Dataset(
     name += "/" + chrom;
     Hdf5Dataset* hdf5_dataset = new Hdf5Dataset(name, size, bin);
     FillDataset(genomic_file_reader, hdf5_dataset, chrom);
+    hdf5_dataset->UpdateSum();
     return hdf5_dataset;
 }
 

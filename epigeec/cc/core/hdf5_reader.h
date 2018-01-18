@@ -28,9 +28,9 @@ class Hdf5Reader {
   ~Hdf5Reader() {Close();}
   Hdf5Dataset* GetDataset(std::string& name, int bin);
   GenomicDataset* GetGenomicDataset(std::string& name, std::vector<std::string> chroms, int bin);
-  float GetSumX(const std::string& name);
-  float GetSumXX(const std::string& name);
-  std::string GetHash();
+  double GetSumX(const std::string& name);
+  double GetSumXX(const std::string& name);
+  std::string GetSignal();
   bool IsValid(const std::string& path);
  private:
   hid_t Open();

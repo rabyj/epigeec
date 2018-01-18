@@ -30,6 +30,7 @@ they are not nessessarily actual files
 #include <stdio.h>
 #include <vector>
 #include <map>
+#include <boost/filesystem.hpp>
 #include "genomic_file_reader_factory.h"
 #include "hdf5_dataset_factory.h"
 #include "hdf5_writer.h"
@@ -38,7 +39,7 @@ they are not nessessarily actual files
 #include "bed_reader.h"
 #include "genomic_dataset.h"
 #include "filter_bitset.h"
-#include "utils.h"
+#include "hdf5.h"
 
 
 int main(int argc, const char * argv[]) {
@@ -56,18 +57,20 @@ int main(int argc, const char * argv[]) {
     return 1;
   }
 
+  H5Eset_auto(NULL, NULL, NULL);
   input_path = argv[1];
   chrom_path = argv[2];
   bin = std::stoi(argv[3], NULL, 10);
   output_path = argv[4];
   include_path = argv[5];
   exclude_path = argv[6];
+
   Hdf5Reader hdf5_reader(input_path);
   Hdf5Writer hdf5_writer(output_path);
   ChromSize chrom_size = ChromSize(chrom_path);
-  input_name = "dataset";
-
+  input_name = hdf5_reader.GetSignal();
   std::vector<std::string> chroms = chrom_size.get_chrom_list();
+
   GenomicFileReader* include_reader = GenomicFileReaderFactory::createGenomicFileReader(include_path, ".bd", chrom_size);
   GenomicFileReader* exclude_reader = GenomicFileReaderFactory::createGenomicFileReader(exclude_path, ".bd", chrom_size);
   FilterBitset include_filter = FilterBitset(chrom_size, bin, *include_reader);
@@ -76,11 +79,11 @@ int main(int argc, const char * argv[]) {
   GenomicDataset* genomic_dataset = hdf5_reader.GetGenomicDataset(input_name, chroms, bin);
   genomic_dataset->filter(filter);
   hdf5_writer.AddGenomicDataset(*genomic_dataset);
-  hdf5_writer.SetHash("/", input_name);
-  hdf5_writer.SetChromSizesHash("/", md5sum(chrom_path));
+  hdf5_writer.SetSignal("/", input_name);
+  hdf5_writer.SetChromSizes("/", boost::filesystem::basename(chrom_path));
   hdf5_writer.SetBin("/", bin);
-  hdf5_writer.SetIncludeHash("/", md5sum(include_path));
-  hdf5_writer.SetExcludeHash("/", md5sum(exclude_path));
+  hdf5_writer.SetInclude("/", boost::filesystem::basename(include_path));
+  hdf5_writer.SetExclude("/", boost::filesystem::basename(exclude_path));
 }
 
 /*

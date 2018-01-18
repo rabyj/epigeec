@@ -35,7 +35,7 @@ Output:
 #include "hdf5_dataset_factory.h"
 #include "hdf5_writer.h"
 #include "input_list.h"
-#include "utils.h"
+#include "hdf5.h"
 
 
 int main(int argc, const char * argv[]) {
@@ -48,11 +48,13 @@ int main(int argc, const char * argv[]) {
                           "{output.hdf5}\n");
     return 1;
   }
+
+  H5Eset_auto(NULL, NULL, NULL);
   input_path = argv[1];
   chrom_path = argv[2];
   bin = std::stoi(argv[3], NULL, 10);
   output_path = argv[4];
-  input_name = "dataset";
+  input_name = boost::filesystem::basename(input_path);
 
   ChromSize chrom_size = ChromSize(chrom_path);
   Hdf5Writer hdf5_writer(output_path);
@@ -68,8 +70,8 @@ int main(int argc, const char * argv[]) {
       input_name, genomic_file_reader, chrom, chrom_size[chrom], bin);
     hdf5_dataset -> NormaliseContent();
     hdf5_writer.AddDataset(*hdf5_dataset);
-    hdf5_writer.SetHash("/", input_name);
-    hdf5_writer.SetChromSizesHash("/", md5sum(chrom_path));
+    hdf5_writer.SetSignal("/", input_name);
+    hdf5_writer.SetChromSizes("/", boost::filesystem::basename(chrom_path));
     hdf5_writer.SetBin("/", bin);
     delete hdf5_dataset;
     hdf5_dataset = NULL;
