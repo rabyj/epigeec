@@ -52,7 +52,7 @@ Generate an NxN Pearson correlation matrix
 List of assemblies and filters offered in the [resource](epigeec/resource) folder:
 
 1. hg19  
-    * blklst: blacklisted regions from (here)[https://sites.google.com/site/anshulkundaje/projects/blacklists]  
+    * blklst: blacklisted regions from [here](https://sites.google.com/site/anshulkundaje/projects/blacklists)  
     * gene: regions corresponding to genes (from refSeq annotation)  
     * tss: transcription sites (from refSeq annotation)  
     
@@ -61,7 +61,7 @@ List of assemblies and filters offered in the [resource](epigeec/resource) folde
     * tss: transcription sites (from refSeq annotation)  
     
 1. mm10   
-    * blklst: blacklisted regions from (here)[https://sites.google.com/site/anshulkundaje/projects/blacklists]   
+    * blklst: blacklisted regions from [here](https://sites.google.com/site/anshulkundaje/projects/blacklists)   
     
 1. saccer3 
   
