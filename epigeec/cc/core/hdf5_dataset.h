@@ -25,6 +25,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/dynamic_bitset.hpp>
 #include "genomic_data_line.h"
 
+struct PartialResult {
+  float sumX = 0;
+  float sumXX = 0;
+  float sumY = 0;
+  float sumYY = 0;
+  float sumXY = 0;
+  int size = 0;
+  struct PartialResult& operator+=(const PartialResult rhs){
+    this->sumX += rhs.sumX;
+    this->sumXX += rhs.sumXX;
+    this->sumY += rhs.sumY;
+    this->sumYY += rhs.sumYY;
+    this->sumXY += rhs.sumXY;
+    this->size += rhs.size;
+    return *this;
+  }
+};
+
 class Hdf5Dataset {
  public:
   Hdf5Dataset(const std::string& name, int size, int bin);
@@ -66,6 +84,7 @@ class Hdf5Dataset {
   }
   std::vector<float>& GetContent();
   double GetPearson(Hdf5Dataset& hdf5_dataset);
+  PartialResult GetPartialPearson(Hdf5Dataset& hdf5_dataset);
   void print() const;
  private:
   std::string name_;

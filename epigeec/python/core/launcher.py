@@ -75,15 +75,15 @@ def hdf5_filter(args):
 
 def corr(args):
     validators.valid_corr(args)
-    corr_path = utils.tmp_name()
     #call correlation
-    command = [config.CORR_PATH,
-                 args.hdf5List,
-                 args.chromSizes,
-                 get_resolution(args),
-                 corr_path]
-    subprocess.call(command)
+    if args.single_chrom:
+        exec_path = config.CORRW_PATH
+    else:
+        exec_path = config.CORR_PATH
 
-    #call make_matrix
-    make_matrix.main(args.hdf5List, corr_path, args.outMatrix)
+    command = [exec_path,
+               args.hdf5List,
+               args.chromSizes,
+               get_resolution(args),
+               args.outMatrix]
     subprocess.call(command)

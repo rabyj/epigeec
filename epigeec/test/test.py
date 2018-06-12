@@ -34,7 +34,8 @@ def get_corr_vals(mat):
     mat.readline()
     vals = []
     for line in mat:
-        vals + line.split()[1:]
+        vals += line.split()[1:]
+    return vals
 
 def launch_to_hdf5(sig_path, chrom_path, resolution, hdf5_path):
     args = ["to_hdf5", "-bw", sig_path, chrom_path, resolution, hdf5_path]
@@ -48,6 +49,11 @@ def launch_filter(hdf5_path, chrom_path, filtered_path, include_path=None, exclu
 
 def launch_corr(list_path, chrom_path, mat_path):
     args = ["correlate", list_path, chrom_path, mat_path]
+    logging.debug(args)
+    epimain.main(args)
+
+def launch_corr_w(list_path, chrom_path, mat_path):
+    args = ["correlate", "-A", list_path, chrom_path, mat_path]
     logging.debug(args)
     epimain.main(args)
 
@@ -89,6 +95,12 @@ class EpigeecTest(unittest.TestCase):
 
         result = os.path.join(files_dir, "test.mat")
         expected = os.path.join(files_dir, "expected")
+        self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+
+        launch_corr_w(list_path, chrom_path, mat_path)
+
+        result = os.path.join(files_dir, "test.mat")
+        expected = os.path.join(files_dir, "expected_w")
         self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
 
         os.remove(hdf5_path[0])

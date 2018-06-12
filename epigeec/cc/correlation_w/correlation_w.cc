@@ -56,19 +56,6 @@ void write_matrix(std::ofstream& output_file,
   }
 }
 
-void write_entry(std::ofstream& output_file,
-                 std::string& name,
-                 std::map<std::string, double>& result) {
-  std::string output_line = name;
-  for (const auto& chrom : result) {
-    output_line += "\t" + chrom.first + "," +  std::to_string(chrom.second);
-  }
-  #pragma omp critical (output) 
-  {
-    output_file << output_line + "\n";
-  }
-}
-
 int main(int argc, const char * argv[]) {
   std::string chrom_path, output_path, list_path;
   // TODO(jl): remove requirement for bin_size
@@ -121,33 +108,8 @@ int main(int argc, const char * argv[]) {
   }
   
   // compute correlation for every pair
-  /*
-  std::ofstream output_file;
-  output_file.open(output_path);
-  int pair_count = 0;
-  std::string sizes = "";
-  while(sizes == ""){
-      sizes = data[pairs[pair_count].first]->get_sizes();
-      ++pair_count;
-  }
-  output_file << sizes << std::endl;
-
   std::string first, second;
-  std::map<std::string, double> result;
-
-  #pragma omp parallel for private(first, second, result)
-  for (uint64_t i = 0; i < pairs.size(); ++i) {
-    first = pairs[i].first;
-    second = pairs[i].second;
-    result = data[first]->Correlate(*(data[second]), chroms);
-    std::string name = first + ":" + second;
-    write_entry(output_file, name, result);
-  }
-
-  output_file.close();
-`*/
-  std::string first, second;
-  std::map<std::string, double> result;
+  float result;
 
   std::vector<std::vector<float>> matrix;
   matrix.resize(input_list.size(), std::vector<float>(input_list.size()));
@@ -156,16 +118,9 @@ int main(int argc, const char * argv[]) {
   for (uint64_t i = 0; i < pairs.size(); ++i) {
     first = pairs[i].first;
     second = pairs[i].second;
-    result = data[first]->Correlate(*(data[second]), chroms);
-    float weighted_result = 0;
-    int total_size = 0;
-    for (const std::pair<std::string, double>& r: result) {
-      weighted_result += r.second*chrom_size[r.first];
-      total_size += chrom_size[r.first];
-    }
-    float final_result = weighted_result/total_size;
-    matrix[input_list.get_index(first)][input_list.get_index(second)] = final_result;
-    matrix[input_list.get_index(second)][input_list.get_index(first)] = final_result;
+    result = data[first]->CorrelateAll(*(data[second]), chroms);
+    matrix[input_list.get_index(first)][input_list.get_index(second)] = result;
+    matrix[input_list.get_index(second)][input_list.get_index(first)] = result;
   }
 
   std::ofstream output_file;
