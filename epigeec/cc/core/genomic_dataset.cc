@@ -64,3 +64,27 @@ std::map<std::string, double>  GenomicDataset::Correlate(
   }
     return results;
 }
+
+float GenomicDataset::CorrelateAll(
+    GenomicDataset& genomic_dataset,
+    std::vector<std::string>& chromosomes) {
+
+  float r, num, denum;
+  PartialResult results = PartialResult();
+
+  for (const std::string& chr : chromosomes) {
+    if (chromosomes_.find(chr) != chromosomes_.end() &&
+        genomic_dataset.chromosomes_.find(chr) !=
+        genomic_dataset.chromosomes_.end()) {
+    results += chromosomes_.at(chr)->GetPartialPearson(*genomic_dataset.chromosomes().at(chr));
+    }
+  }
+  if (results.size == 0) {
+    r = std::numeric_limits<float>::quiet_NaN();
+  } else {
+    num = results.sumXY - (results.sumX * results.sumY / results.size);
+    denum = (results.sumXX - pow(results.sumX, 2) / results.size) * (results.sumYY - pow(results.sumY, 2) / results.size);
+    r = num / pow(denum, 0.5);
+  }
+  return r;
+}

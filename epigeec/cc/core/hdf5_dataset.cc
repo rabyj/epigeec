@@ -15,6 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ==============================================================================*/
 
 #include <string>
+#include <math.h>
 #include <cmath>
 #include <utility>
 #include <numeric>
@@ -27,7 +28,7 @@ Hdf5Dataset::Hdf5Dataset(const std::string& name, int size, int bin) {
   bin_ = bin;
   //  initialise content vector based on the genome size and bin
   int content_size;
-  content_size = (size + bin_- 1) / bin_;  // round up
+  content_size = ceil(size / bin_)+1;
   content_.resize(content_size);
   size_ = content_size;
 }
@@ -172,6 +173,27 @@ double Hdf5Dataset::GetPearson(Hdf5Dataset& hdf5_dataset) {
   r = num / pow(denum, 0.5);
   return r;
 }
+
+PartialResult Hdf5Dataset::GetPartialPearson(Hdf5Dataset& hdf5_dataset) {
+  if (!(size_ == hdf5_dataset.size())) {
+    throw std::runtime_error("Attemping to correlate vectors of different lenghts");
+  }
+  PartialResult results = PartialResult();
+
+  std::vector<float>& v1 = content_;
+  std::vector<float>& v2 = hdf5_dataset.GetContent();
+
+  for (unsigned int i = 0; i < size_; ++i) {
+    results.sumXY += v1[i] * v2[i];
+    results.sumXX += v1[i] * v1[i];
+    results.sumYY += v2[i] * v2[i];
+    results.sumX += v1[i];
+    results.sumY += v2[i];
+  }
+  results.size = size_;
+  return results;
+}
+
 
 void Hdf5Dataset::print() const {
   for (float i : content_) {
