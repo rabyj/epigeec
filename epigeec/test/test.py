@@ -95,13 +95,15 @@ class EpigeecTest(unittest.TestCase):
 
         result = os.path.join(files_dir, "test.mat")
         expected = os.path.join(files_dir, "expected")
-        self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+        #self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+        self.assertEqual(open(result).read(), open(expected).read())
 
         launch_corr_w(list_path, chrom_path, mat_path)
 
         result = os.path.join(files_dir, "test.mat")
         expected = os.path.join(files_dir, "expected_w")
-        self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+        #self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+        self.assertEqual(open(result).read(), open(expected).read())
 
         os.remove(hdf5_path[0])
         os.remove(hdf5_path[1])
