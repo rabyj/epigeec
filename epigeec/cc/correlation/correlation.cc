@@ -120,32 +120,6 @@ int main(int argc, const char * argv[]) {
     }
   }
   
-  // compute correlation for every pair
-  /*
-  std::ofstream output_file;
-  output_file.open(output_path);
-  int pair_count = 0;
-  std::string sizes = "";
-  while(sizes == ""){
-      sizes = data[pairs[pair_count].first]->get_sizes();
-      ++pair_count;
-  }
-  output_file << sizes << std::endl;
-
-  std::string first, second;
-  std::map<std::string, double> result;
-
-  #pragma omp parallel for private(first, second, result)
-  for (uint64_t i = 0; i < pairs.size(); ++i) {
-    first = pairs[i].first;
-    second = pairs[i].second;
-    result = data[first]->Correlate(*(data[second]), chroms);
-    std::string name = first + ":" + second;
-    write_entry(output_file, name, result);
-  }
-
-  output_file.close();
-`*/
   std::string first, second;
   std::map<std::string, double> result;
 
@@ -157,13 +131,15 @@ int main(int argc, const char * argv[]) {
     first = pairs[i].first;
     second = pairs[i].second;
     result = data[first]->Correlate(*(data[second]), chroms);
-    float weighted_result = 0;
-    int total_size = 0;
+    double weighted_result = 0;
+    long total_size = 0;
     for (const std::pair<std::string, double>& r: result) {
+      if (!isnan(r.second)) {
       weighted_result += r.second*chrom_size[r.first];
       total_size += chrom_size[r.first];
+      }
     }
-    float final_result = weighted_result/total_size;
+    double final_result = weighted_result/total_size;
     matrix[input_list.get_index(first)][input_list.get_index(second)] = final_result;
     matrix[input_list.get_index(second)][input_list.get_index(first)] = final_result;
   }

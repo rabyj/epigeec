@@ -112,6 +112,24 @@ class EpigeecTest(unittest.TestCase):
         os.remove(list_path)
         os.remove(mat_path)
 
+        sig_path = [os.path.join(sig_dir, "001f63cdf00286183e32c1bb0fd6d85f"),
+                    os.path.join(sig_dir, "002f4247fadb6c6e4000a6fc12e5b93a")]
+        chrom_path = os.path.join(chrom_dir, "hg19.noy.chrom.sizes")
+        hdf5_path = [os.path.join(hdf5_dir, "001f63cdf00286183e32c1bb0fd6d85f"),
+                     os.path.join(hdf5_dir, "002f4247fadb6c6e4000a6fc12e5b93a")]
+        launch_to_hdf5(sig_path[0], chrom_path, resolution, hdf5_path[0])
+        launch_to_hdf5(sig_path[1], chrom_path, resolution, hdf5_path[1])
+        with open(list_path, 'w') as test_list:
+            test_list.write("{0}\n{1}".format(hdf5_path[0], hdf5_path[1]))
+        launch_corr(list_path, chrom_path, mat_path)
+        expected = os.path.join(files_dir, "expected_hg19")
+        self.assertEqual(open(result).read(), open(expected).read())
+
+        os.remove(hdf5_path[0])
+        os.remove(hdf5_path[1])
+        os.remove(list_path)
+        os.remove(mat_path)
+
 def main():
     parser = argparse.ArgumentParser(description='A test script for epigeec')
     parser.add_argument("-v", "--verbose", help="enable debug logs", action="store_true")
