@@ -28,6 +28,7 @@ GenomicDataset::GenomicDataset(const std::string& file_name) {
 void GenomicDataset::add_chromosome(const std::string& name,
                                     Hdf5Dataset* hdf5_dataset) {
   chromosomes_.emplace(name, hdf5_dataset);
+  chromosomes_.find(name);
 }
 
 std::string GenomicDataset::get_name() {
@@ -47,6 +48,7 @@ std::map<std::string, double>  GenomicDataset::Correlate(
     std::vector<std::string>& chromosomes) {
   std::map<std::string, double> results;
   for (const std::string& chr : chromosomes) {
+    chromosomes_.find(chr);
     if (chromosomes_.find(chr) != chromosomes_.end() &&
         genomic_dataset.chromosomes_.find(chr) !=
         genomic_dataset.chromosomes_.end()) {
@@ -62,7 +64,7 @@ std::map<std::string, double>  GenomicDataset::Correlate(
       results.emplace(chr, std::numeric_limits<double>::quiet_NaN());
     }
   }
-    return results;
+  return results;
 }
 
 float GenomicDataset::CorrelateAll(

@@ -56,19 +56,6 @@ void write_matrix(std::ofstream& output_file,
   }
 }
 
-void write_entry(std::ofstream& output_file,
-                 std::string& name,
-                 std::map<std::string, double>& result) {
-  std::string output_line = name;
-  for (const auto& chrom : result) {
-    output_line += "\t" + chrom.first + "," +  std::to_string(chrom.second);
-  }
-  #pragma omp critical (output) 
-  {
-    output_file << output_line + "\n";
-  }
-}
-
 int main(int argc, const char * argv[]) {
   std::string chrom_path, output_path, list_path;
   // TODO(jl): remove requirement for bin_size

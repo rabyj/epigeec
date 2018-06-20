@@ -43,8 +43,9 @@ def read_compatibility_data(hdf5_path, chrom_path):
     compatibility_data["bin"] = f.attrs["bin"][0]
     name = f.attrs["signal_filename"]
     for chrom in read_chrom_sizes(chrom_path).keys():
-        size = f[name].get(chrom, 0).shape[0]
-        if size:
+        chrom_data = f[name].get(chrom, 0)
+        if chrom_data:
+            size = chrom_data.shape[0]
             compatibility_data[chrom] = size
     return compatibility_data
 

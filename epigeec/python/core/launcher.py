@@ -34,6 +34,13 @@ def get_resolution(args):
             raise AssertionError("get_resolution called outside of filter or correlation mode")
     return str(utils.read_compatibility_data(hdf5_path, args.chromSizes)["bin"])
 
+def get_resolution_from_list(hdf5_list, chrom_path):
+    try:
+        hdf5_path = open(hdf5_list).readline().strip()
+    except AttributeError:
+        raise AssertionError("get_resolution called outside of filter or correlation mode")
+    return str(utils.read_compatibility_data(hdf5_path, chrom_path)["bin"])
+
 def get_hdf5_converter(args):
     if args.bigwig:
         return config.BW_TO_HDF5_PATH
@@ -86,4 +93,22 @@ def corr(args):
                args.chromSizes,
                get_resolution(args),
                args.outMatrix]
+    subprocess.call(command)
+
+def corr_nm(is_kent, list_path1, list_path2, chrom_path, mat_path):
+    validators.valid_hdf5_list(list_path1)
+    validators.valid_hdf5_list(list_path2)
+    validators.valid_chromsizes(chrom_path)
+    #call correlation
+    if is_kent:
+        exec_path = config.CORRWNM_PATH
+    else:
+        exec_path = config.CORRNM_PATH
+
+    command = [exec_path,
+               list_path1,
+               list_path2,
+               chrom_path,
+               get_resolution_from_list(list_path1, chrom_path),
+               mat_path]
     subprocess.call(command)

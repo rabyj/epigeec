@@ -21,40 +21,46 @@ from builtins import range, zip
 
 import json
 import numpy as np
+import pandas as pd
 import sys
+import argparse
 
 """
 18cd442ee1fa03df74517335ed2ed92d:a0f380a52e792f65b96c41ad5fdfd8e8   chr1,-0.091218  chr10,-0.120059 chr11,-0.085029 chr12,0.962397  chr13,0.038357  chr14,0.908901  chr15,-0.060206 chr16,-0.109638 chr17,-0.091413 chr18,0.03692chr19,-0.113141    chr2,0.999374   chr3,-0.076656  chr4,-0.194520  chr5,-0.087904  chr6,0.821275   chr7,-0.099522  chr8,-0.004072  chr9,0.997895   chrX,0.172631   chrY,0.712472
 """
 
-class InputFile(object):
-    def __init__(self, file_path):
-        self.nameset = set()
-        self.files = []
-        self.parse_file(file_path)
-
-    def parse_file(self, file_path):
-        try:
-            with open(file_path) as list_file:
-                for line in list_file:
-                    line = line.strip()
-                    if line:
-                        if line not in self.nameset:
-                            self.nameset.add(line)
-                            self.files.append(line)
-        except IOError:
-            pass
-
-    def __getitem__(self, index):
-        return self.files[index]
-
-
 class Matrix(object):
-    def __init__(self, labels):
-        self.index = dict(zip(labels, range(len(labels))))
-        self.labels = labels
-        self.size = len(labels)
-        self.matrix = np.zeros((self.size, self.size))
+    def __init__(self, *args):
+        if len(args) == 1:
+            self.init_nn(*args)
+        elif len(args) == 3:
+            self.init_nm(*args)
+        else:
+            exit()
+
+    def init_nn(self, nn):
+        dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
+        self.labels = sorted(dframe.columns.values.tolist())
+        self.index = dict(zip(labels, range(len(self.labels))))
+        self.size = len(self.labels)
+        self.matrix = np.nan_to_num(dframe.as_matrix())
+
+    def init_nm(self, nn, nm, mm):
+        nn_dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
+        nm_dframe = pd.read_csv(nm, delimiter='\t', index_col=0)
+        mm_dframe = pd.read_csv(mm, delimiter='\t', index_col=0)
+
+        nn_labels = nn_dframe.columns.values.tolist()
+        mm_labels = mm_dframe.columns.values.tolist()
+        self.labels = sorted(nn_labels + mm_labels)
+        self.index = dict(zip(self.labels, range(len(self.labels))))
+        self.size = len(self.labels)
+
+        #merge matrices
+        tmp1 = pd.concat([nn_dframe, nm_dframe], axis=1)
+        tmp2 = pd.concat([mm_dframe, nm_dframe])
+        tmp3 = pd.concat([tmp2.transpose(), tmp1], axis=0)
+        self.matrix = np.nan_to_num(tmp3.as_matrix())
 
     def __getitem__(self, labels):
         x_label, y_label = labels
@@ -83,62 +89,35 @@ class Matrix(object):
             s += self.labels[i] + '\t' + '\t'.join(["{0:.4f}".format(v) for v in self.matrix[i]]) + '\n'
         return s
 
-     
-class CorrFileParser(object):
-    def __init__(self, corr_file_path):
-        self.path = corr_file_path
-
-    def make_matrix(self, labels):
-        matrix = Matrix(labels)
-        try:
-            with open(self.path) as corr_file:
-                header = corr_file.readline()
-                header = header.strip().split()
-                weights = {}
-                for chrom in header:
-                    chrom = chrom.split(":")
-                    weights[chrom[0]] = float(chrom[1])
-                for line in corr_file:
-                    line = line.split()
-                    file1, file2 = line[0].split(':')
-                    average = weighted_average(line[1:], weights)
-                    matrix[file1, file2] = average
-        except IOError:
-            pass
-        return matrix
-
-def weighted_average(line, weights):
-    w_sum = 0.0
-    total = 0.0
-    for element in line:
-        chrom, value = element.split(',')
-        total += weights[chrom]
-        w_sum += float(value) * weights[chrom]
-    return w_sum / total
-
-def main(list_path, corr_path, output_path, meta = {}):
-
-    input_file = InputFile(list_path)
-    matrix = CorrFileParser(corr_path).make_matrix(input_file.files)
-    matrix.convert_labels(meta)
-    with open(output_path, 'w') as output_file:
-        output_file.write(str(matrix))
-
 def listjson2dictjson(old_json):
     new_json = {"datasets":{}}
     for token in old_json.get("datasets", []):
         new_json["datasets"][token["md5sum"]] = token
     return new_json
 
+def parse_args(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-nm')
+    parser.add_argument('-mm')
+    parser.add_argument('-meta')
+    parser.add_argument('matrix_nn')
+    parser.add_argument('output_path')
+    args = parser.parse_args(argv)
+    return args
+
+def main(argv):
+    args = parse_args(argv)
+    if args.nm is None and args.mm is None:
+        matrix = Matrix(args.matrix_nn)
+    else:
+        matrix = Matrix(args.matrix_nn, args.nm, args.mm)
+    if args.meta is not None:
+        matrix.convert_labels(listjson2dictjson(json.load(open(args.meta))))
+    with open(args.output_path, 'w') as output_file:
+        output_file.write(str(matrix))
+
+def cli():
+    main(sys.argv[1:])
+
 if __name__ == '__main__':
-    if len(sys.argv) < 4 or len(sys.argv) > 5:
-        print("usage: python make_matrix.py {list_path} {corr_path} {output_path}")
-        exit()
-    LIST_PATH = sys.argv[1]
-    CORR_PATH = sys.argv[2]
-    OUTPUT_PATH = sys.argv[3]
-    if len(sys.argv) == 4:
-        META = {}
-    elif len(sys.argv) == 5:
-        META = listjson2dictjson(json.load(open(sys.argv[4])))
-    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    cli()

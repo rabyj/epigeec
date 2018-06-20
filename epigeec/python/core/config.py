@@ -18,7 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 import os.path
 
-VERSION = "1.4.3"
+VERSION = "1.4.4"
 
 CORE_DIR = os.path.dirname(os.path.realpath(__file__))
 PY_DIR = os.path.dirname(CORE_DIR)
@@ -32,3 +32,5 @@ BG_TO_HDF5_PATH = os.path.join(BIN_DIR, "bg_to_hdf5")
 FILTER_PATH = os.path.join(BIN_DIR, "filter")
 CORR_PATH = os.path.join(BIN_DIR, "correlation")
 CORRW_PATH = os.path.join(BIN_DIR, "correlation_w")
+CORRNM_PATH = os.path.join(BIN_DIR, "correlation_nm")
+CORRWNM_PATH = os.path.join(BIN_DIR, "correlation_w_nm")

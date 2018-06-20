@@ -29,6 +29,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import python.core.config as config
 sys.path.append(config.CORE_DIR)
 import python.core.main as epimain
+import python.core.make_matrix as make_matrix
+import python.core.launcher as launcher
 
 def get_corr_vals(mat):
     mat.readline()
@@ -57,33 +59,127 @@ def launch_corr_w(list_path, chrom_path, mat_path):
     logging.debug(args)
     epimain.main(args)
 
+def launch_corr_nm(list_path1, list_path2, chrom_path, mat_path):
+    launcher.corr_nm(False, list_path1, list_path2, chrom_path, mat_path)
+
+def launch_make_matrix(mat_nn, mat_nm, mat_mm, mat_path):
+    args = ["-nm", mat_nm, "-mm", mat_mm, mat_nn, mat_path]
+    logging.debug(args)
+    make_matrix.main(args)
+
 class EpigeecTest(unittest.TestCase):
-    def test_e2e(self):
-        parser = argparse.ArgumentParser(description='A test script for epigeec')
-        parser.add_argument("-v", "--verbose", help="enable debug logs", action="store_true")
+    def e2e(self):
+        self.files_dir = os.path.join(config.TEST_DIR, "files")
+        self.sig_dir = os.path.join(self.files_dir, "signal")
+        self.hdf5_dir = os.path.join(self.files_dir, "hdf5")
+        self.filtered_dir = os.path.join(self.files_dir, "filtered")
+        self.chrom_dir = os.path.join(config.RES_DIR, "chrom_sizes")
+        self.epigeec_path = os.path.join(config.PY_DIR, "main.py")
+        self.list_path = os.path.join(config.TEST_DIR, "test_list.txt")
+        self.mat_path = os.path.join(self.files_dir, "test.mat")
 
-        args = parser.parse_args()
-        if args.verbose:
-            logging.basicConfig(level=logging.DEBUG)
-
-        files_dir = os.path.join(config.TEST_DIR, "files")
-        sig_dir = os.path.join(files_dir, "signal")
-        hdf5_dir = os.path.join(files_dir, "hdf5")
-        filtered_dir = os.path.join(files_dir, "filtered")
-        chrom_dir = os.path.join(config.RES_DIR, "chrom_sizes")
-        epigeec_path = os.path.join(config.PY_DIR, "main.py")
-        list_path = os.path.join(config.TEST_DIR, "test_list.txt")
-        sig_path = [os.path.join(sig_dir, "d9f18e91644bacfee3669d577b661d15"),
-                    os.path.join(sig_dir, "fd85fe6672c629a116a9b6131883a60b")]
-        hdf5_path = [os.path.join(hdf5_dir, "d9f18e91644bacfee3669d577b661d15"),
-                    os.path.join(hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
-        filtered_path = [os.path.join(filtered_dir, "d9f18e91644bacfee3669d577b661d15"),
-                        os.path.join(filtered_dir, "fd85fe6672c629a116a9b6131883a60b")]
-        mat_path = os.path.join(files_dir, "test.mat")
-        chrom_path = os.path.join(chrom_dir, "saccer3.can.chrom.sizes")
+    def test_e2e_nm(self):
+        self.e2e()
+        sig_path = [os.path.join(self.sig_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(self.sig_dir, "fd85fe6672c629a116a9b6131883a60b"),
+                    os.path.join(self.sig_dir, "70ac0e9e6b4dbdf5d6b5cbf54a8989e3")]
+        hdf5_path1 = [os.path.join(self.hdf5_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(self.hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        hdf5_path2 = [os.path.join(self.hdf5_dir, "70ac0e9e6b4dbdf5d6b5cbf54a8989e3")]
+        list_path2 = os.path.join(config.TEST_DIR, "test_list2.txt")
+        mat_path1 = os.path.join(self.files_dir, "test1.mat")
+        mat_path2 = os.path.join(self.files_dir, "test2.mat")
+        mat_path3 = os.path.join(self.files_dir, "test3.mat")
+        chrom_path = os.path.join(self.chrom_dir, "saccer3.can.chrom.sizes")
         resolution = "10000"
 
-        with open(list_path, 'w') as test_list:
+        with open(self.list_path, 'w') as test_list:
+            test_list.write("{0}\n{1}".format(hdf5_path1[0], hdf5_path1[1]))
+        with open(list_path2, 'w') as test_list:
+            test_list.write("{0}".format(hdf5_path2[0]))
+
+        launch_to_hdf5(sig_path[0], chrom_path, resolution, hdf5_path1[0])
+        launch_to_hdf5(sig_path[1], chrom_path, resolution, hdf5_path1[1])
+        launch_to_hdf5(sig_path[2], chrom_path, resolution, hdf5_path2[0])
+
+        launch_corr(self.list_path, chrom_path, mat_path1)
+        launch_corr(list_path2, chrom_path, mat_path2)
+        launch_corr_nm(self.list_path, list_path2, chrom_path, mat_path3)
+
+        launch_make_matrix(mat_path1, mat_path3, mat_path2, self.mat_path)
+
+        result = os.path.join(self.files_dir, "test.mat")
+        expected = os.path.join(self.files_dir, "expected_nm")
+        self.assertEqual(open(result).read(), open(expected).read())
+
+        os.remove(hdf5_path1[0])
+        os.remove(hdf5_path1[1])
+        os.remove(hdf5_path2[0])
+        os.remove(self.list_path)
+        os.remove(list_path2)
+        os.remove(mat_path1)
+        os.remove(mat_path2)
+        os.remove(mat_path3)
+        os.remove(self.mat_path)
+
+    def test_e2e_hg19(self):
+        self.e2e()
+        sig_path = [os.path.join(self.sig_dir, "001f63cdf00286183e32c1bb0fd6d85f"),
+                    os.path.join(self.sig_dir, "002f4247fadb6c6e4000a6fc12e5b93a")]
+        hdf5_path = [os.path.join(self.hdf5_dir, "001f63cdf00286183e32c1bb0fd6d85f"),
+                     os.path.join(self.hdf5_dir, "002f4247fadb6c6e4000a6fc12e5b93a")]
+        chrom_path = os.path.join(self.chrom_dir, "hg19.noy.chrom.sizes")
+        resolution = "10000"
+        launch_to_hdf5(sig_path[0], chrom_path, resolution, hdf5_path[0])
+        launch_to_hdf5(sig_path[1], chrom_path, resolution, hdf5_path[1])
+        with open(self.list_path, 'w') as test_list:
+            test_list.write("{0}\n{1}".format(hdf5_path[0], hdf5_path[1]))
+        launch_corr(self.list_path, chrom_path, self.mat_path)
+        expected = os.path.join(self.files_dir, "expected_hg19")
+        result = os.path.join(self.files_dir, "test.mat")
+        self.assertEqual(open(result).read(), open(expected).read())
+        os.remove(hdf5_path[0])
+        os.remove(hdf5_path[1])
+        os.remove(self.list_path)
+        os.remove(self.mat_path)
+
+    def test_e2e_kent(self):
+        self.e2e()
+        sig_path = [os.path.join(self.sig_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(self.sig_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        hdf5_path = [os.path.join(self.hdf5_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(self.hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        chrom_path = os.path.join(self.chrom_dir, "saccer3.can.chrom.sizes")
+        resolution = "10000"
+        launch_to_hdf5(sig_path[0], chrom_path, resolution, hdf5_path[0])
+        launch_to_hdf5(sig_path[1], chrom_path, resolution, hdf5_path[1])
+        with open(self.list_path, 'w') as test_list:
+            test_list.write("{0}\n{1}".format(hdf5_path[0], hdf5_path[1]))
+        launch_corr_w(self.list_path, chrom_path, self.mat_path)
+
+        result = os.path.join(self.files_dir, "test.mat")
+        expected = os.path.join(self.files_dir, "expected_w")
+        #self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+        self.assertEqual(open(result).read(), open(expected).read())
+
+        os.remove(hdf5_path[0])
+        os.remove(hdf5_path[1])
+        os.remove(self.list_path)
+        os.remove(self.mat_path)
+
+    def test_e2e_saccer(self):
+        self.e2e()
+        sig_path = [os.path.join(self.sig_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(self.sig_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        hdf5_path = [os.path.join(self.hdf5_dir, "d9f18e91644bacfee3669d577b661d15"),
+                    os.path.join(self.hdf5_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        filtered_path = [os.path.join(self.filtered_dir, "d9f18e91644bacfee3669d577b661d15"),
+                        os.path.join(self.filtered_dir, "fd85fe6672c629a116a9b6131883a60b")]
+        mat_path = os.path.join(self.files_dir, "test.mat")
+        chrom_path = os.path.join(self.chrom_dir, "saccer3.can.chrom.sizes")
+        resolution = "10000"
+
+        with open(self.list_path, 'w') as test_list:
             test_list.write("{0}\n{1}".format(filtered_path[0], filtered_path[1]))
 
         launch_to_hdf5(sig_path[0], chrom_path, resolution, hdf5_path[0])
@@ -91,44 +187,15 @@ class EpigeecTest(unittest.TestCase):
         launch_filter(hdf5_path[0], chrom_path, filtered_path[0])
         launch_filter(hdf5_path[1], chrom_path, filtered_path[1])
 
-        launch_corr(list_path, chrom_path, mat_path)
+        launch_corr(self.list_path, chrom_path, mat_path)
 
-        result = os.path.join(files_dir, "test.mat")
-        expected = os.path.join(files_dir, "expected")
-        #self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
+        result = os.path.join(self.files_dir, "test.mat")
+        expected = os.path.join(self.files_dir, "expected")
         self.assertEqual(open(result).read(), open(expected).read())
-
-        launch_corr_w(list_path, chrom_path, mat_path)
-
-        result = os.path.join(files_dir, "test.mat")
-        expected = os.path.join(files_dir, "expected_w")
-        #self.assertEqual(get_corr_vals(open(result)), get_corr_vals(open(expected)))
-        self.assertEqual(open(result).read(), open(expected).read())
-
         os.remove(hdf5_path[0])
         os.remove(hdf5_path[1])
-        os.remove(filtered_path[0])
-        os.remove(filtered_path[1])
-        os.remove(list_path)
-        os.remove(mat_path)
-
-        sig_path = [os.path.join(sig_dir, "001f63cdf00286183e32c1bb0fd6d85f"),
-                    os.path.join(sig_dir, "002f4247fadb6c6e4000a6fc12e5b93a")]
-        chrom_path = os.path.join(chrom_dir, "hg19.noy.chrom.sizes")
-        hdf5_path = [os.path.join(hdf5_dir, "001f63cdf00286183e32c1bb0fd6d85f"),
-                     os.path.join(hdf5_dir, "002f4247fadb6c6e4000a6fc12e5b93a")]
-        launch_to_hdf5(sig_path[0], chrom_path, resolution, hdf5_path[0])
-        launch_to_hdf5(sig_path[1], chrom_path, resolution, hdf5_path[1])
-        with open(list_path, 'w') as test_list:
-            test_list.write("{0}\n{1}".format(hdf5_path[0], hdf5_path[1]))
-        launch_corr(list_path, chrom_path, mat_path)
-        expected = os.path.join(files_dir, "expected_hg19")
-        self.assertEqual(open(result).read(), open(expected).read())
-
-        os.remove(hdf5_path[0])
-        os.remove(hdf5_path[1])
-        os.remove(list_path)
-        os.remove(mat_path)
+        os.remove(self.list_path)
+        os.remove(self.mat_path)
 
 def main():
     parser = argparse.ArgumentParser(description='A test script for epigeec')

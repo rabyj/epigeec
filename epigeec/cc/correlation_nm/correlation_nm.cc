@@ -43,7 +43,7 @@ void write_matrix(std::ofstream& output_file,
   output_file << std::fixed << std::setprecision(4);
   //write header
   for (uint64_t i = 0; i < input_list2.size(); ++i) {
-    output_file << "\t" << input_list1[i].second;
+    output_file << "\t" << input_list2[i].second;
   }
   output_file << "\n";
   //write matrix
@@ -56,24 +56,11 @@ void write_matrix(std::ofstream& output_file,
   }
 }
 
-void write_entry(std::ofstream& output_file,
-                 std::string& name,
-                 std::map<std::string, double>& result) {
-  std::string output_line = name;
-  for (const auto& chrom : result) {
-    output_line += "\t" + chrom.first + "," +  std::to_string(chrom.second);
-  }
-  #pragma omp critical (output) 
-  {
-    output_file << output_line + "\n";
-  }
-}
-
 int main(int argc, const char * argv[]) {
-  std::string chrom_path, output_path, list_path;
+  std::string chrom_path, output_path, list_path, list_path2;
   // TODO(jl): remove requirement for bin_size
   int bin;
-
+  
   if (argc < 5) {
     printf("Usage: correlation {input_list1} "
                               "{input_list2} "
@@ -128,14 +115,13 @@ int main(int argc, const char * argv[]) {
       }
     } catch (...) { std::cout<< "Could not open file: "<< input_list2[i].first<< std::endl; }
   }
-
   // generate all file pairs to correlate
   std::vector<std::pair<std::string, std::string>> pairs;
   //nxm
   for (uint64_t i = 0; i < input_list.size(); ++i) {
     for (uint64_t j = 0; j < input_list2.size(); ++j) {
-      pairs.push_back(std::make_pair(input_list[i].second,
-                                     input_list2[j].second));
+      pairs.push_back(std::make_pair(input_list[i].first,
+                                     input_list2[j].first));
     }
   }
   
