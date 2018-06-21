@@ -77,7 +77,7 @@ class Matrix(object):
 
     def convert_labels(self, meta):
         for i in range(len(self.labels)):
-            token = meta.get("datasets", {}).get(self.labels[i], {})
+            token = meta.get("datasets", {}).get(self.labels[i][:32], {})
             if token:
                 self.labels[i] = "{0}".format(token.get("file_name", ""))
 
