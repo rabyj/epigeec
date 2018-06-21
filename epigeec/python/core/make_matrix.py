@@ -40,6 +40,7 @@ class Matrix(object):
 
     def init_nn(self, nn):
         dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
+        print(dframe)
         self.desc = dframe.index.name
         #dframe.index.name = None
         self.labels = sorted(dframe.columns.values.tolist())
