@@ -111,5 +111,4 @@ def corr_nm(is_kent, list_path1, list_path2, chrom_path, mat_path):
                chrom_path,
                get_resolution_from_list(list_path1, chrom_path),
                mat_path]
-    print(command)
     subprocess.call(command)
