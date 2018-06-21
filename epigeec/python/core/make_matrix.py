@@ -48,7 +48,11 @@ class Matrix(object):
     def init_nm(self, nn, nm, mm):
         nn_dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
         nm_dframe = pd.read_csv(nm, delimiter='\t', index_col=0)
-        mm_dframe = pd.read_csv(mm, delimiter='\t', index_col=0).rename(mapper=lambda x: x[:32])
+        mm_dframe = pd.read_csv(mm, delimiter='\t', index_col=0)
+
+        fun = lambda x: x[:32]
+
+        nm_dframe.columns.fun()
 
         nn_labels = nn_dframe.columns.values.tolist()
         mm_labels = mm_dframe.columns.values.tolist()
