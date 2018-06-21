@@ -39,6 +39,7 @@ class Matrix(object):
             exit()
 
     def init_nn(self, nn):
+        print(open(nn).read())
         dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
         print(dframe)
         self.desc = dframe.index.name
