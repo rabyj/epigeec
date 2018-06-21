@@ -48,7 +48,7 @@ class Matrix(object):
     def init_nm(self, nn, nm, mm):
         nn_dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
         nm_dframe = pd.read_csv(nm, delimiter='\t', index_col=0)
-        mm_dframe = pd.read_csv(mm, delimiter='\t', index_col=0)
+        mm_dframe = pd.read_csv(mm, delimiter='\t', index_col=0).rename(lambda x: x[:32])
 
         nn_labels = nn_dframe.columns.values.tolist()
         mm_labels = mm_dframe.columns.values.tolist()
@@ -60,7 +60,7 @@ class Matrix(object):
         tmp1 = pd.concat([nn_dframe, nm_dframe], axis=1)
         tmp2 = pd.concat([mm_dframe, nm_dframe])
         tmp3 = pd.concat([tmp2.transpose(), tmp1], axis=0)
-        pd.set_option('display.width', 1000)
+        pd.options.display.max_rows = 999
         print(nn_dframe)
         print(nm_dframe)
         print(mm_dframe)
