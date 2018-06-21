@@ -29,6 +29,7 @@ os.environ['LD_LIBRARY_PATH'] = config.LIB_DIR
 
 def main(argv):
     args = input_parser.parse_args(argv)
+    return
     args.func(args)
 
 def cli():
