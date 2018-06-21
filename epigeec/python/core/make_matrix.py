@@ -41,7 +41,7 @@ class Matrix(object):
     def init_nn(self, nn):
         dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
         self.labels = sorted(dframe.columns.values.tolist())
-        self.index = dict(zip(labels, range(len(self.labels))))
+        self.index = dict(zip(self.labels, range(len(self.labels))))
         self.size = len(self.labels)
         self.matrix = np.nan_to_num(dframe.as_matrix())
 
