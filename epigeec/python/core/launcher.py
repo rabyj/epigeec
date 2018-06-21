@@ -94,8 +94,16 @@ def corr(args):
                get_resolution(args),
                args.outMatrix]
     subprocess.call(command)
+    prepend(args.outMatrix, args.desc)
 
-def corr_nm(is_kent, list_path1, list_path2, chrom_path, mat_path):
+
+def prepend(file, s):
+    with open(file, 'r+') as f:
+        content = f.read()
+        f.seek(0, 0)
+        f.write(s)
+
+def corr_nm(is_kent, list_path1, list_path2, chrom_path, mat_path, desc=""):
     validators.valid_hdf5_list(list_path1)
     validators.valid_hdf5_list(list_path2)
     validators.valid_chromsizes(chrom_path)
@@ -112,3 +120,4 @@ def corr_nm(is_kent, list_path1, list_path2, chrom_path, mat_path):
                get_resolution_from_list(list_path1, chrom_path),
                mat_path]
     subprocess.call(command)
+    prepend(mat_path, desc)
