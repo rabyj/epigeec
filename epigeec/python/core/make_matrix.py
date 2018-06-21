@@ -41,9 +41,9 @@ class Matrix(object):
     def init_nn(self, nn):
         dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
         self.labels = sorted(dframe.columns.values.tolist())
-        self.index = dict(zip(labels, range(len(self.labels))))
+        self.index = dict(zip(self.labels, range(len(self.labels))))
         self.size = len(self.labels)
-        self.matrix = np.nan_to_num(dframe.as_matrix())
+        self.matrix = np.nan_to_num(dframe.sort(axis=0).sort(axis=1).as_matrix())
 
     def init_nm(self, nn, nm, mm):
         nn_dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
@@ -60,7 +60,7 @@ class Matrix(object):
         tmp1 = pd.concat([nn_dframe, nm_dframe], axis=1)
         tmp2 = pd.concat([mm_dframe, nm_dframe])
         tmp3 = pd.concat([tmp2.transpose(), tmp1], axis=0)
-        self.matrix = np.nan_to_num(tmp3.as_matrix())
+        self.matrix = np.nan_to_num(tmp3.sort_index(axis=0).sort_index(axis=1).as_matrix())
 
     def __getitem__(self, labels):
         x_label, y_label = labels
@@ -77,7 +77,7 @@ class Matrix(object):
 
     def convert_labels(self, meta):
         for i in range(len(self.labels)):
-            token = meta.get("datasets", {}).get(self.labels[i], {})
+            token = meta.get("datasets", {}).get(self.labels[i][:32], {})
             if token:
                 self.labels[i] = "{0}".format(token.get("file_name", ""))
 
