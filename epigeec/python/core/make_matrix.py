@@ -40,6 +40,8 @@ class Matrix(object):
 
     def init_nn(self, nn):
         dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
+        self.desc = dframe.index.name
+        del dframe.index.name
         self.labels = sorted(dframe.columns.values.tolist())
         self.index = dict(zip(self.labels, range(len(self.labels))))
         self.size = len(self.labels)
@@ -49,6 +51,10 @@ class Matrix(object):
         nn_dframe = pd.read_csv(nn, delimiter='\t', index_col=0)
         nm_dframe = pd.read_csv(nm, delimiter='\t', index_col=0)
         mm_dframe = pd.read_csv(mm, delimiter='\t', index_col=0)
+        self.desc = nn_dframe.index.name
+        del nn_dframe.index.name
+        del nm_dframe.index.name
+        del mm_dframe.index.name
 
         nm_dframe = nm_dframe.rename(columns={c:c[:32] for c in nm_dframe.columns})
 
@@ -87,6 +93,8 @@ class Matrix(object):
 
     def __str__(self):
         s = ""
+        if self.desc is not None:
+            s += self.desc
         s += '\t' + '\t'.join(self.labels) + '\n'
         for i in range(self.size):
             s += self.labels[i] + '\t' + '\t'.join(["{0:.4f}".format(v) for v in self.matrix[i]]) + '\n'
