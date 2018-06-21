@@ -50,7 +50,7 @@ class Matrix(object):
         nm_dframe = pd.read_csv(nm, delimiter='\t', index_col=0)
         mm_dframe = pd.read_csv(mm, delimiter='\t', index_col=0)
 
-        nm_dframe.rename(columns={c:c[:32] for c in nm_dframe.columns})
+        nm_dframe = nm_dframe.rename(columns={c:c[:32] for c in nm_dframe.columns})
 
         nn_labels = nn_dframe.columns.values.tolist()
         mm_labels = mm_dframe.columns.values.tolist()
