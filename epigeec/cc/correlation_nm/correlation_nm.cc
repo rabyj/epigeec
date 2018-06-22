@@ -88,21 +88,24 @@ int main(int argc, const char * argv[]) {
   std::cout<< output_path<< std::endl;
   // read hdf5
   std::map<std::string, GenomicDataset*> data;
-  try{
   for (uint64_t i = 0; i < input_list.size(); ++i) {
+    std::cout<< "start"<< std::endl;
     try {
       Hdf5Reader hdf5_reader = Hdf5Reader(input_list[i].first);
+      std::cout<< "reader"<< std::endl;
       data.emplace(input_list[i].first, new GenomicDataset(input_list[i].first));
+      std::cout<< "emplaced"<< std::endl;
       for (const std::string& chrom : chroms) {
+        std::cout<< "chroms"<< std::endl;
         std::string name = hdf5_reader.GetSignal() + "/" + chrom;
         if (hdf5_reader.IsValid(name)) {
+          std::cout<< "inif"<< std::endl;
           hdf5_dataset = hdf5_reader.GetDataset(name, bin);
           data[input_list[i].first]->add_chromosome(chrom, hdf5_dataset);
         }
       }
     } catch (...) { std::cout<< "Could not open file: "<< input_list[i].first<< std::endl; }
   }
-  } catch (...) { std::cout<< "fuck"<< std::endl; }
   std::cout<< output_path<< std::endl;
   // read hdf5 2
   for (uint64_t i = 0; i < input_list2.size(); ++i) {
