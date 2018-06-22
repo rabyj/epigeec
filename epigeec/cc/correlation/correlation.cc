@@ -41,11 +41,10 @@ void write_matrix(std::ofstream& output_file,
                  std::vector<std::vector<float>>& matrix) {
   output_file << std::fixed << std::setprecision(4);
   //write header
-  std::string first_line = "";
   for (uint64_t i = 0; i < input_list.size(); ++i) {
     output_file << "\t" << input_list[i].second;
   }
-  output_file << first_line << "\n";
+  output_file << "\n";
   //write matrix
   for (uint64_t i = 0; i < input_list.size(); ++i) {
     output_file << input_list[i].second;
