@@ -27,6 +27,7 @@ Hdf5Reader::Hdf5Reader(const std::string& file_path) {
 }
 
 Hdf5Dataset* Hdf5Reader::GetDataset(std::string& name, int bin) {
+  std::cout<< "start: " << name<< std::endl;
   // get dimensions
   hsize_t dims = 0;
   H5T_class_t class_id;
@@ -37,8 +38,8 @@ Hdf5Dataset* Hdf5Reader::GetDataset(std::string& name, int bin) {
   data.reserve(dims);
   data.resize(dims);
   int check = H5LTread_dataset_float(file_id_, name.c_str(), &data[0]);
-  //std::cout<< "check: " << check<< std::endl;
   Hdf5Dataset* hdf5_dataset = new Hdf5Dataset(name, data, bin, GetSumX(name), GetSumXX(name));
+  std::cout<< "end: " << name<< std::endl;
   return hdf5_dataset;
 }
 
