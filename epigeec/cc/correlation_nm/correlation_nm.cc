@@ -70,7 +70,7 @@ int main(int argc, const char * argv[]) {
     return 1;
   }
 
-  H5Eset_auto(NULL, NULL, NULL);
+  //H5Eset_auto(NULL, NULL, NULL);
   list_path = argv[1];
   list_path2 = argv[2];
   chrom_path = argv[3];
