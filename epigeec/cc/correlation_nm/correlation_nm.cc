@@ -70,7 +70,7 @@ int main(int argc, const char * argv[]) {
     return 1;
   }
 
-  //H5Eset_auto(NULL, NULL, NULL);
+  H5Eset_auto(NULL, NULL, NULL);
   list_path = argv[1];
   list_path2 = argv[2];
   chrom_path = argv[3];
@@ -103,22 +103,14 @@ int main(int argc, const char * argv[]) {
   std::cout<< output_path<< std::endl;
   // read hdf5 2
   for (uint64_t i = 0; i < input_list2.size(); ++i) {
-    //std::cout<< "infor"<< std::endl;
     try {
       Hdf5Reader hdf5_reader = Hdf5Reader(input_list2[i].first);
-      //std::cout<< "reader"<< std::endl;
       data.emplace(input_list2[i].first, new GenomicDataset(input_list2[i].first));
-      //std::cout<< "emplace"<< std::endl;
       for (const std::string& chrom : chroms) {
-        //std::cout<< "chrom"<< std::endl;
         std::string name = hdf5_reader.GetSignal() + "/" + chrom;
-        //std::cout<< "getsig"<< std::endl;
         if (hdf5_reader.IsValid(name)) {
-          //std::cout<< "valid"<< std::endl;
           hdf5_dataset = hdf5_reader.GetDataset(name, bin);
-          //std::cout<< "dataset"<< std::endl;
           data[input_list2[i].first]->add_chromosome(chrom, hdf5_dataset);
-          //std::cout<< "add"<< std::endl;
         }
       }
     } catch (...) { std::cout<< "Could not open file: "<< input_list2[i].first<< std::endl; }
