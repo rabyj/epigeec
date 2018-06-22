@@ -88,6 +88,7 @@ int main(int argc, const char * argv[]) {
   std::cout<< output_path<< std::endl;
   // read hdf5
   std::map<std::string, GenomicDataset*> data;
+  try{
   for (uint64_t i = 0; i < input_list.size(); ++i) {
     try {
       Hdf5Reader hdf5_reader = Hdf5Reader(input_list[i].first);
@@ -101,6 +102,7 @@ int main(int argc, const char * argv[]) {
       }
     } catch (...) { std::cout<< "Could not open file: "<< input_list[i].first<< std::endl; }
   }
+  } catch (...) { std::cout<< "fuck"<< std::endl; }
   std::cout<< output_path<< std::endl;
   // read hdf5 2
   for (uint64_t i = 0; i < input_list2.size(); ++i) {
