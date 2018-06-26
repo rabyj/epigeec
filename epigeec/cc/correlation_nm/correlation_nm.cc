@@ -84,7 +84,7 @@ int main(int argc, const char * argv[]) {
   Hdf5Dataset* hdf5_dataset;
 
   std::vector<std::string> chroms = chrom_size.get_chrom_list();
-  std::cout<< output_path<< std::endl;
+
   // read hdf5
   std::map<std::string, GenomicDataset*> data;
   for (uint64_t i = 0; i < input_list.size(); ++i) {
@@ -100,7 +100,7 @@ int main(int argc, const char * argv[]) {
       }
     } catch (...) { std::cout<< "Could not open file: "<< input_list[i].first<< std::endl; }
   }
-  std::cout<< output_path<< std::endl;
+
   // read hdf5 2
   for (uint64_t i = 0; i < input_list2.size(); ++i) {
     try {
@@ -115,7 +115,6 @@ int main(int argc, const char * argv[]) {
       }
     } catch (...) { std::cout<< "Could not open file: "<< input_list2[i].first<< std::endl; }
   }
-  std::cout<< output_path<< std::endl;
   // generate all file pairs to correlate
   std::vector<std::pair<std::string, std::string>> pairs;
   //nxm
@@ -125,7 +124,6 @@ int main(int argc, const char * argv[]) {
                                      input_list2[j].first));
     }
   }
-  std::cout<< output_path<< std::endl;
   std::string first, second;
   std::map<std::string, double> result;
 
@@ -148,10 +146,9 @@ int main(int argc, const char * argv[]) {
     double final_result = weighted_result/total_size;
     matrix[input_list.get_index(first)][input_list2.get_index(second)] = final_result;
   }
-  std::cout<< output_path<< std::endl;
+
   std::ofstream output_file;
   output_file.open(output_path);
-  std::cout<< output_path<< std::endl;
   write_matrix(output_file, input_list, input_list2, matrix);
   output_file.close();
 
