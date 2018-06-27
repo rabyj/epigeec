@@ -18,6 +18,7 @@ from __future__ import absolute_import, division, print_function
 
 import subprocess
 import sys
+import re
 
 import config
 import make_matrix
@@ -99,7 +100,7 @@ def corr(args):
 
 def prepend(file, s):
     with open(file, 'r+') as f:
-        content = s + f.read()
+        content = re.escape(s) + f.read()
         f.seek(0, 0)
         f.write(content)
 
