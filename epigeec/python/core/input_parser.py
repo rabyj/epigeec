@@ -46,7 +46,7 @@ def parse_args(args):
 
     parser_corr = subparsers.add_parser("correlate", description="Compute a Pearson correlation coefficient for each pair of hdf5 from a list.", help="Perform N by N Pearson correlation of HDF5 files generated with the same chrom sizes, filters and resolution.")
     parser_corr.set_defaults(func=launcher.corr)
-    parser_corr.add_argument('-A', dest="single_chrom", action='store_true', help="Use to correlate all chromosomes as if they were one single large chromosome")
+    parser_corr.add_argument('--concat', '-c', dest="single_chrom", action='store_true', help="Use to correlate all chromosomes as if they were one single large chromosome")
     parser_corr.add_argument("hdf5List", help="The list of HDF5 files to correlate, one file per line. (TEXT)")
     parser_corr.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
     parser_corr.add_argument("outMatrix", help="The final tab-delimited matrix file. (TEXT)")

@@ -46,7 +46,7 @@ Filter an hdf5 file (optional)
 
 Generate an NxN Pearson correlation matrix  
 
-	usage: epigeec correlate [-h] [-A] hdf5List chromSizes outMatrix 
+	usage: epigeec correlate [-h] [--concat] [--desc] hdf5List chromSizes outMatrix 
   
 ‌‌   
 List of assemblies and filters offered in the [resource](epigeec/resource) folder:
