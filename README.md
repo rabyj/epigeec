@@ -12,7 +12,7 @@ Linux/x64 is the only OS currently supported
 
 You will need pip to install the python package, use the following command if not already installed
 
-	sudo apt-get python-pip  
+	sudo apt-get install python-pip  
 	
 Pip will attempt to install all dependencies but most likely will fail
 
@@ -22,7 +22,7 @@ See documentation on how to install [pandas](https://github.com/svaksha/PyData-W
 
 You might have more success with
 
-	sudo apt-get python-h5py python-pandas
+	sudo apt-get install python-h5py python-pandas
 
 **Install epiGeEC**
 
