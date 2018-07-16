@@ -55,7 +55,7 @@ def launch_corr(list_path, chrom_path, mat_path):
     epimain.main(args)
 
 def launch_corr_w(list_path, chrom_path, mat_path):
-    args = ["correlate", "-A", list_path, chrom_path, mat_path]
+    args = ["correlate", "--concat", "--desc", "ed 23\t\nsdn", list_path, chrom_path, mat_path]
     logging.debug(args)
     epimain.main(args)
 

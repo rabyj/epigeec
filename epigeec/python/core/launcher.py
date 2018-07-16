@@ -100,7 +100,7 @@ def corr(args):
 
 def prepend(file, s):
     with open(file, 'r+') as f:
-        content = "%r"%s + f.read()
+        content = ("%r"%s)[1:-1] + f.read()
         f.seek(0, 0)
         f.write(content)
 
