@@ -100,7 +100,7 @@ def corr(args):
 
 def prepend(file, s):
     with open(file, 'r+') as f:
-        content = s.encode('string-escape') + f.read()
+        content = "%r"%s + f.read()
         f.seek(0, 0)
         f.write(content)
 
