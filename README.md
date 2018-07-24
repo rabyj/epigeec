@@ -81,11 +81,11 @@ Start running the tools
 
 	epigeec to_hdf5 -bw signal/myfile.bw chrom_sizes 10000 hdf5/myfile.hdf5
 	epigeec filter hdf5/myfile.hdf5 resource/chrom_sizes filtered/myfile.hdf5 -s sel.bed -e exc.bed
-	epigeec correlate filtered_list resource/chrom_sizes mymatrix.mat  
+	epigeec correlate --desc 5dts_10kb filtered_list resource/chrom_sizes mymatrix.mat  
 
 The output is a tab separated matrix file with your correlations
 
-			file1	file2	file3	file4	file5  
+	5dts_10kb	file1	file2	file3	file4	file5  
 	file1	1.0000	0.0225	0.0579	0.0583	0.0603  
 	file2	0.0225	1.0000	0.0625	0.0523	0.0642  
 	file3	0.0579	0.0625	1.0000	0.7535	0.7917  
