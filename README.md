@@ -79,9 +79,9 @@ Create a directory structure to hold the data
 
 Start running the tools
 
-	epigeec -bw signal/myfile.bw chrom_sizes 10000 hdf5/myfile.hdf5
-	epigeec hdf5/myfile.hdf5 resource/chrom_sizes filtered/myfile.hdf5 -s sel.bed -e exc.bed
-	epigeec filtered_list resource/chrom_sizes mymatrix.mat  
+	epigeec to_hdf5 -bw signal/myfile.bw chrom_sizes 10000 hdf5/myfile.hdf5
+	epigeec filter hdf5/myfile.hdf5 resource/chrom_sizes filtered/myfile.hdf5 -s sel.bed -e exc.bed
+	epigeec correlate filtered_list resource/chrom_sizes mymatrix.mat  
 
 The output is a tab separated matrix file with your correlations
 
