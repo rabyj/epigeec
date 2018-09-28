@@ -28,7 +28,7 @@ Hdf5Dataset::Hdf5Dataset(const std::string& name, int size, int bin) {
   bin_ = bin;
   //  initialise content vector based on the genome size and bin
   int content_size;
-  content_size = ceil(size / bin_)+1;
+  content_size = ceil(size / bin_);
   content_.resize(content_size);
   size_ = content_size;
 }
