@@ -4,6 +4,8 @@ The **epiGenomic Efficient Correlator** tool is designed to efficiently perform 
   
 A galaxy implementation including thousands of pre-computed public datasets is availalble at http://epigeec.genap.ca/galaxy/ and also includes support for the WIG format and Spearman correlation(coming soon to command line version). It also offers [tools](https://bitbucket.org/labjacquespe/epigeec_analysis/src/master/) for further annotation and analysis of the matrix files created by epiGeEC.
 
+Please refer to the following paper for a description of epiGeEC : https://academic.oup.com/bioinformatics/article/35/4/674/5058096
+
 ### Installation
 - - - -
 Linux/x64 is the only OS currently supported
