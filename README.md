@@ -8,13 +8,17 @@ A galaxy implementation including thousands of pre-computed public datasets is a
 - - - -
 Linux/x64 is the only OS currently supported
 
+**Install epiGeEC**
+
+	sudo pip install epigeec  
+
 **Dependencies**
 
 You will need pip to install the python package, use the following command if not already installed
 
 	sudo apt-get install python-pip  
 	
-Pip will attempt to install all dependencies but most likely will fail
+Pip will attempt to install all dependencies but might fail
 
 See documentation on how to install [pandas](https://github.com/svaksha/PyData-Workshop-Sprint/wiki/linux-install-pandas) and [h5py](http://docs.h5py.org/en/latest/build.html) as they are most likely to fail.
 
@@ -23,10 +27,6 @@ See documentation on how to install [pandas](https://github.com/svaksha/PyData-W
 You might have more success with
 
 	sudo apt-get install python-h5py python-pandas
-
-**Install epiGeEC**
-
-	sudo pip install epigeec  
 
 
 ### How To Use
