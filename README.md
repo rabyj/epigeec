@@ -34,7 +34,7 @@ You might have more success with
 
 The process is done in 2 or 3 steps, conversion to hdf5, filtering(optional) and correlation.
 
-The signal files (bedgraph, wig or bigwig) need to first be converted to hdf5 format, this will require a chromSizes file(available [here](epigeec/resource) or from UCSC) for the assembly used by your signal files. The chromSizes file can be tuncated. For example, keeping only canonical chromosomes will work even if the bigwig countains non-cannonical chromosomes. You will also need to choose a resolution, we suggest a resolution of 1000 or 10000 base pair to obtain biologically interesting results.  
+The signal files (bedgraph, wig or bigwig) need to first be converted to hdf5 format, this will require a chromSizes file(available [here](epigeec/resource) or from [UCSC](http://hgdownload.cse.ucsc.edu/downloads.html)) for the assembly used by your signal files. The chromSizes file can be tuncated. For example, keeping only canonical chromosomes will work even if the bigwig countains non-cannonical chromosomes. You will also need to choose a resolution, we suggest a resolution of 1000 or 10000 base pair to obtain biologically interesting results.  
 
 The hdf5 files can be filtered over certain regions (such as regions corresponding to genes) using your own bed files or those available [here](epigeec/resource).  
 
