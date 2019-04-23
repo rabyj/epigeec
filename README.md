@@ -34,11 +34,11 @@ You might have more success with
 
 The process is done in 2 or 3 steps, conversion to hdf5, filtering(optional) and correlation.
 
-The signal files (bedgraph, wig or bigwig) need to first be converted to hdf5 format, this will require a chromsize file(available [here](epigeec/resource) or from UCSC) for the assembly used by your signal files, you will also need to choose a resolution, we suggest 1000 or 10000 base pair to obtain biologically interesting results.  
+The signal files (bedgraph, wig or bigwig) need to first be converted to hdf5 format, this will require a chromSizes file(available [here](epigeec/resource) or from UCSC) for the assembly used by your signal files. The chromSizes file can be tuncated. For example, keeping only canonical chromosomes will work even if the bigwig countains non-cannonical chromosomes. You will also need to choose a resolution, we suggest a resolution of 1000 or 10000 base pair to obtain biologically interesting results.  
 
 The hdf5 files can be filtered over certain regions (such as regions corresponding to genes) using your own bed files or those available [here](epigeec/resource).  
 
-The final step, the correlation itself, will require a list of all hdf5 files to be correlated(one file path per line) aswell as the chromSizes file used to generate the hdf5 files(it is not possible to correlate files from different assemblies).  
+The final step, the correlation itself, will require a list of all hdf5 files to be correlated(one file path per line) as well as the chromSizes file used to generate the hdf5 files. It is not possible to correlate files from different assemblies.  
 
 For more info on each parameter use the help flag
 
