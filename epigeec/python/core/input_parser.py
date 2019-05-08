@@ -26,7 +26,7 @@ def parse_args(args):
     parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(config.VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.")
 
-    parser_hdf5 = subparsers.add_parser("to_hdf5", description="Average the singla in non-overlapping bins." ,help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools.")
+    parser_hdf5 = subparsers.add_parser("to_hdf5", description="Average the signal in non-overlapping bins." ,help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools.")
     parser_hdf5.set_defaults(func=launcher.to_hdf5)
     group = parser_hdf5.add_mutually_exclusive_group(required=True)
     group.add_argument("-bw", "--bigwig", action='store_true', help="Indicate that the signal file is in bigWig format.")
