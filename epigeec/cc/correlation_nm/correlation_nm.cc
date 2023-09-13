@@ -65,7 +65,7 @@ int main(int argc, const char * argv[]) {
     printf("Usage: correlation {input_list1} "
                               "{input_list2} "
                               "{chrom_sizes} "
-                              "{bin_size}"
+                              "{bin_size} "
                               "{output.results}\n");
     return 1;
   }

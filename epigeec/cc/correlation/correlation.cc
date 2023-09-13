@@ -63,7 +63,7 @@ int main(int argc, const char * argv[]) {
   if (argc < 4) {
     printf("Usage: correlation {input_list} "
                               "{chrom_sizes} "
-                              "{bin_size}"
+                              "{bin_size} "
                               "{output.results}\n");
     return 1;
   }
