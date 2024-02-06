@@ -51,7 +51,7 @@ class FilterBitset {
       int start_bin, end_bin;
       start_bin = token.start_position() / bin_;
       end_bin = token.end_position() / bin_;
-      for (int i = start_bin; i <= end_bin; ++i) {
+      for (int i = start_bin; i < end_bin; ++i) {
         filter.set(i);
       }
     }
