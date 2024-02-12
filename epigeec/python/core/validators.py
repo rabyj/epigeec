@@ -131,7 +131,7 @@ def is_bg(path):
     with open(path) as bg:
         max_lines = 10 #number of lines to validate
         for line in itertools.islice(bg, max_lines):
-            line = bg.next().strip()
+            line = next(bg).strip()
             if line:
                 line = line.split()
                 if not len(line) >= 4: return False
