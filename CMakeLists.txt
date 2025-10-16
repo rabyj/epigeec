@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
+CMAKE_MINIMUM_REQUIRED( VERSION 3.5 )
 
 SET( PROJ_NAME "epiGeEC" )
 SET( EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/epigeec/bin" )
@@ -6,13 +6,30 @@ SET( LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/epigeec/lib" )
 SET( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${CMAKE_SOURCE_DIR}/epigeec/lib )
 
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 SET(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 
 SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,'$ORIGIN/../lib'" )
 SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath,'$ORIGIN/../lib'" )
 
 PROJECT( ${PROJ_NAME} )
+
+# Find HDF5
+find_package(HDF5 COMPONENTS C HL REQUIRED)
+if(HDF5_FOUND)
+    include_directories(${HDF5_INCLUDE_DIRS})
+    message(STATUS "HDF5 found: ${HDF5_LIBRARIES}")
+else()
+    message(FATAL_ERROR "HDF5 not found!")
+endif()
+# Find Boost
+find_package(Boost COMPONENTS filesystem system iostreams REQUIRED)
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    message(STATUS "Boost found: ${Boost_LIBRARIES}")
+else()
+    message(FATAL_ERROR "Boost not found!")
+endif()
 
 ADD_SUBDIRECTORY( "third_party/bwreader" "bwreader" )
 ADD_SUBDIRECTORY( "epigeec/cc/core" "core" )

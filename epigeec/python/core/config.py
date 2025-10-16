@@ -18,7 +18,17 @@ from __future__ import absolute_import, division, print_function
 
 import os.path
 
-VERSION = "1.5.1"
+
+def read_version():
+    """Read the version from the VERSION file."""
+    this_file = os.path.realpath(__file__)
+    this_folder = os.path.dirname(this_file)
+    version_file = os.path.join(this_folder, "..", "..", "..", "VERSION")
+    with open(version_file, "r", encoding="utf8") as vf:
+        return vf.read().strip()
+
+
+VERSION = read_version()
 
 CORE_DIR = os.path.dirname(os.path.realpath(__file__))
 PY_DIR = os.path.dirname(CORE_DIR)

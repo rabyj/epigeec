@@ -1,7 +1,26 @@
 .DS_Store
 .vscode
 *.pyc
-build
 *.swp
-*.egg-info
-dist
+
+# Ignore all build artifacts
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+build/
+dist/
+*.egg-info/
+
+# Ignore compiled binaries and libraries
+epigeec/bin/*
+epigeec/lib/*
+
+# Keep directory structure
+!epigeec/bin/.gitkeep
+!epigeec/lib/.gitkeep

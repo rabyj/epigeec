@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=64"] # wheel included by default with setuptools
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epigeec"
+dynamic = ["version"]
+authors = [
+    {name = "Jonathan Laperle", email = "jonathan.laperle@usherbrooke.ca"}
+]
+description = "Tools for fast NxN correlation of whole-genome epigenomic data."
+readme = "README.rst"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = [
+    "pandas",
+    "numpy",
+    "h5py",
+    "future",
+]
+
+[project.scripts]
+epigeec = "epigeec.python.core.main:cli"
+
+[tool.setuptools]
+packages = {find = {}}
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.setuptools.package-data]
+epigeec = [
+    "bin/*",
+    "lib/*.so",
+    "lib/*.so.*",
+    "test/files/**/*",
+    "resource/chrom_sizes/*.sizes",
+]
+
+[tool.cibuildwheel]
+build = ["cp311-*", "cp312-*", "cp313-*"]
+skip = ["*-musllinux*"]
+before-build = [
+    "pip install cmake",
+    "cmake .",
+    "make -j $(nproc || echo 4)",
+]
+
+[tool.cibuildwheel.linux]
+before-all = "yum install -y hdf5-devel boost-devel"
+
+[tool.cibuildwheel.macos]
+before-all = "brew install hdf5 boost"
