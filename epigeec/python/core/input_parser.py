@@ -1,15 +1,15 @@
 # Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
@@ -18,10 +18,12 @@ from __future__ import absolute_import, division, print_function
 
 import argparse
 
-import launcher
 import config
+import launcher
+
 
 def parse_args(args):
+    # fmt: off
     parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
     parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(config.VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.")
@@ -51,5 +53,5 @@ def parse_args(args):
     parser_corr.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
     parser_corr.add_argument("outMatrix", help="The final tab-delimited matrix file. (TEXT)")
     parser_corr.add_argument('--desc', type=str, default="")
-    
+    # fmt: on
     return parser.parse_args(args)
