@@ -77,12 +77,16 @@ def hdf5_filter(args):
         select = args.select
     else:
         select = utils.tmp_name()
-        utils.make_all_filter(open(select, 'w'), open(args.chromSizes))
+        with (
+            open(select, "w", encoding="utf8") as select_filter,
+            open(args.chromSizes, "r", encoding="utf8") as chrom,
+        ):
+            utils.make_all_filter(select_filter, chrom)
     if args.exclude:
         exclude = args.exclude
     else:
         exclude = utils.tmp_name()
-        open(exclude, 'w')
+        open(exclude, "w").close()  # Create empty file and close it
 
         command = [
             config.FILTER_PATH,

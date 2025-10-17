@@ -57,9 +57,10 @@ def read_compatibility_data(hdf5_path, chrom_path):
 
 def read_chrom_sizes(chrom_path):
     chroms = {}
-    for line in open(chrom_path):
-        line.strip()
-        if line:
-            line = line.split()
-            chroms[line[0]] = line[1]
-    return chroms
+    with open(chrom_path, "r", encoding="utf8") as f:
+        for line in f:
+            line.strip()
+            if line:
+                line = line.split()
+                chroms[line[0]] = line[1]
+        return chroms
