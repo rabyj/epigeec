@@ -52,3 +52,8 @@ before-all = "yum install -y hdf5-devel boost-devel"
 
 [tool.cibuildwheel.macos]
 before-all = "brew install hdf5 boost"
+
+[tool.pylint.main]
+extension-pkg-allow-list = [
+    "pyBigWig",
+]
