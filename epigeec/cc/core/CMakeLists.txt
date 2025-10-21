@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED( VERSION 3.5 )
 
 SET( PROJ_NAME      "core" )
 SET( PROJ_INCLUDES  "." "${CMAKE_SOURCE_DIR}/third_party/bwreader/include/bwreader" )
-SET( PROJ_LIBRARIES "bwreader" "boost_filesystem" "boost_system" )
+SET( PROJ_LIBRARIES "bwreader" "boost_filesystem" )
 
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3 -Wall -std=c++11 -g" )
 

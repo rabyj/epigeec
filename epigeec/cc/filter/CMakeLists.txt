@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED( VERSION 3.5 )
 
 SET( PROJ_NAME      "filter" )
 SET( PROJ_INCLUDES  "${CMAKE_SOURCE_DIR}/epigeec/cc/core" )
-SET( PROJ_LIBRARIES "core" "boost_filesystem" "boost_system" )
+SET( PROJ_LIBRARIES "core" "boost_filesystem" )
 
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3 -Wall -std=c++11 -g" )
 
