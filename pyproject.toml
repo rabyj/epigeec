@@ -54,12 +54,15 @@ before-build = [
 ]
 
 [tool.cibuildwheel.linux]
+archs = ["auto"] # handled in build matrix in GitHub Actions
+manylinux-x86_64-image = "manylinux_2_28"  # manylinux2014 is deprecated since 2024
+manylinux-aarch64-image = "manylinux_2_28"
 before-all = "yum install -y hdf5-devel boost-devel"
 
 [tool.cibuildwheel.macos]
-archs = ["x86_64", "arm64"]
+archs = ["auto"]  # handled in build matrix in GitHub Actions
 before-all = "brew install hdf5 boost"
-environment = {CMAKE_PREFIX_PATH = "/opt/homebrew;/usr/local"}
+environment = {CMAKE_PREFIX_PATH = "/opt/homebrew:/usr/local:/opt/local"}
 
 [tool.pylint.main]
 extension-pkg-allow-list = [
