@@ -13,8 +13,7 @@ authors = [
 ]
 description = "Tools for fast NxN correlation of whole-genome epigenomic data."
 readme = "README.rst"
-license = "GPL-3.0-or-later"
-license-files = ["LICENSE"]
+license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.11"
 dependencies = [
     "pandas",
