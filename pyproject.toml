@@ -57,7 +57,10 @@ before-build = [
 archs = ["auto"] # handled in build matrix in GitHub Actions
 manylinux-x86_64-image = "manylinux_2_28"  # manylinux2014 is deprecated since 2024
 manylinux-aarch64-image = "manylinux_2_28"
-before-all = "yum install -y hdf5-devel boost-devel"
+before-all = [
+    "yum install -y epel-release",  # Enable EPEL repository first, package names changed with manylinux_2_28
+    "yum install -y hdf5-devel boost-devel"
+]
 
 [tool.cibuildwheel.macos]
 archs = ["auto"]  # handled in build matrix in GitHub Actions
