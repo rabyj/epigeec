@@ -80,10 +80,10 @@ int main(int argc, const char * argv[]) {
   genomic_dataset->filter(filter);
   hdf5_writer.AddGenomicDataset(*genomic_dataset);
   hdf5_writer.SetSignal("/", input_name);
-  hdf5_writer.SetChromSizes("/", boost::filesystem::basename(chrom_path));
+  hdf5_writer.SetChromSizes("/", boost::filesystem::path(chrom_path).stem().string());
   hdf5_writer.SetBin("/", bin);
-  hdf5_writer.SetInclude("/", boost::filesystem::basename(include_path));
-  hdf5_writer.SetExclude("/", boost::filesystem::basename(exclude_path));
+  hdf5_writer.SetInclude("/", boost::filesystem::path(include_path).stem().string());
+  hdf5_writer.SetExclude("/", boost::filesystem::path(exclude_path).stem().string());
 }
 
 /*
