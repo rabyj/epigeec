@@ -40,13 +40,23 @@ else()
     message(FATAL_ERROR "HDF5 not found!")
 endif()
 
-# Find Boost
-find_package(Boost COMPONENTS filesystem iostreams REQUIRED)
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    message(STATUS "Boost found: ${Boost_LIBRARIES}")
-else()
-    message(FATAL_ERROR "Boost not found!")
+# Find Boost with components that might be compiled
+# This is messy because Ubuntu has an older Boost (1.66.0) that necessitates system,
+# but macOS Homebrew Boost (1.89.0) is header-only for these components.
+# This is all for github actions images.
+find_package(Boost COMPONENTS system filesystem iostreams)
+
+if(NOT Boost_FOUND)
+    # If component search failed, try without components
+    find_package(Boost REQUIRED)
+endif()
+
+include_directories(${Boost_INCLUDE_DIRS})
+
+# Link whatever libraries were found
+if(Boost_LIBRARIES)
+    link_libraries(${Boost_LIBRARIES})
+    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
 endif()
 
 # Help CMake find libomp on macOS
@@ -63,8 +73,6 @@ if(APPLE)
     include_directories(/opt/homebrew/opt/libomp/include)
     include_directories(/usr/local/opt/libomp/include)
 endif()
-
-find_package(OpenMP)
 
 # Find OpenMP
 find_package(OpenMP)
