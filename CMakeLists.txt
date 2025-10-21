@@ -59,7 +59,12 @@ if(APPLE)
     if(NOT EXISTS ${OpenMP_omp_LIBRARY})
         set(OpenMP_omp_LIBRARY "/usr/local/opt/libomp/lib/libomp.dylib")
     endif()
+    # Add include directory for omp.h
+    include_directories(/opt/homebrew/opt/libomp/include)
+    include_directories(/usr/local/opt/libomp/include)
 endif()
+
+find_package(OpenMP)
 
 # Find OpenMP
 find_package(OpenMP)
