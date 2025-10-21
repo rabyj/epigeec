@@ -61,7 +61,7 @@ before-all = "yum install -y hdf5-devel boost-devel"
 
 [tool.cibuildwheel.macos]
 archs = ["auto"]  # handled in build matrix in GitHub Actions
-before-all = "brew install hdf5 boost"
+before-all = "brew install hdf5 boost libomp"
 environment = {CMAKE_PREFIX_PATH = "/opt/homebrew:/usr/local:/opt/local"}
 
 [tool.pylint.main]

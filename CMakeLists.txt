@@ -23,6 +23,7 @@ PROJECT( ${PROJ_NAME} )
 find_package(HDF5 COMPONENTS C HL REQUIRED)
 if(HDF5_FOUND)
     include_directories(${HDF5_INCLUDE_DIRS})
+    link_directories(${HDF5_LIBRARY_DIRS}) # macos: find libsz
     message(STATUS "HDF5 found: ${HDF5_LIBRARIES}")
 else()
     message(FATAL_ERROR "HDF5 not found!")
