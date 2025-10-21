@@ -24,10 +24,12 @@ jobs:
         include:
           - os: ubuntu-latest
             cibw_archs: "x86_64 aarch64"
-          - os: macos-13 # Intel Mac for x86_64
+          - os: macos-13 # Intel Mac for x86_64 - could not build without specifying 13.0
             cibw_archs: "x86_64"
-          - os: macos-14 # Apple Silicon for arm64
+            deployment_target: "13.0"
+          - os: macos-14 # Apple Silicon - could not build without specifying 14.0
             cibw_archs: "arm64"
+            deployment_target: "14.0"
 
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +45,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.21.0
         env:
           CIBW_ARCHS: ${{ matrix.cibw_archs }} # Pass archs to cibuildwheel
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }} # Set deployment target if defined
 
       - uses: actions/upload-artifact@v4
         if: env.GITHUB_ACTIONS == 'true' # Only upload when running in GitHub Actions, so 'act' doesn't try to upload
