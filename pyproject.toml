@@ -29,17 +29,18 @@ version_scheme = "guess-next-dev"
 local_scheme = "no-local-version"
 
 [tool.setuptools]
-packages = {find = {}}
+include-package-data = false  # Don't auto-include everything
 
-[tool.setuptools.dynamic]
-version = {file = "VERSION"}
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["epigeec*"]
+exclude = ["epigeec.test*", "epigeec.cc*"]  # Exclude test and C++ source from packages
 
 [tool.setuptools.package-data]
 epigeec = [
     "bin/*",
     "lib/*.so",
     "lib/*.so.*",
-    "test/files/**/*",
     "resource/chrom_sizes/*.sizes",
 ]
 

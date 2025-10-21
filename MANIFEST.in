@@ -1,0 +1,41 @@
+# MANIFEST.in for the epigeec package
+# This file specifies additional files to include in the source distribution to enable building the package from source.
+# This is an alternative to cloning the git repository.
+# Core package files
+include pyproject.toml
+include setup.py
+include VERSION
+include LICENSE
+include README.rst
+
+# Python source code auto-included, this is just for clarity
+recursive-include epigeec *.py
+
+# C++ source code
+recursive-include epigeec/cc *.cc *.h *.cpp
+recursive-include third_party *.cc *.h *.cpp *.c
+include CMakeLists.txt
+recursive-include epigeec/cc CMakeLists.txt
+recursive-include third_party CMakeLists.txt
+
+# Build scripts
+include build_wheel.sh
+
+# Test files and resources
+recursive-include epigeec/test/files *
+recursive-include epigeec/resource *
+
+# Exclude compiled artifacts and caches
+global-exclude *.so
+global-exclude *.o
+global-exclude *.a
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude .DS_Store
+prune build
+prune dist
+prune *.egg-info
+prune CMakeFiles
+exclude CMakeCache.txt
+exclude .gitignore
