@@ -26,7 +26,7 @@ InputList::InputList(const std::string& file_path) {
   int count = 0;
   bool success = 0;
   while (flot>> path) {
-    name = boost::filesystem::basename(path);
+    name = boost::filesystem::path(path).stem().string();
     success = this->index_map_.emplace(path, count).second; // ensures no duplicates
     if (success) {
       this->files_.push_back(std::make_pair(path, name));
