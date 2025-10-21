@@ -1,5 +1,10 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 3.5 )
 
+# Set CMP0167 to OLD to avoid issues with finding Hdf5 and Boost
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 OLD)
+endif()
+
 SET( PROJ_NAME "epiGeEC" )
 SET( EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/epigeec/bin" )
 SET( LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/epigeec/lib" )
@@ -23,7 +28,7 @@ else()
     message(FATAL_ERROR "HDF5 not found!")
 endif()
 # Find Boost
-find_package(Boost COMPONENTS filesystem system iostreams REQUIRED)
+find_package(Boost COMPONENTS filesystem iostreams REQUIRED)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     message(STATUS "Boost found: ${Boost_LIBRARIES}")
