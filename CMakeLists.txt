@@ -49,6 +49,18 @@ else()
     message(FATAL_ERROR "Boost not found!")
 endif()
 
+# Help CMake find libomp on macOS
+if(APPLE)
+    set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+    set(OpenMP_C_LIB_NAMES "omp")
+    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+    set(OpenMP_CXX_LIB_NAMES "omp")
+    set(OpenMP_omp_LIBRARY "/opt/homebrew/opt/libomp/lib/libomp.dylib")
+    if(NOT EXISTS ${OpenMP_omp_LIBRARY})
+        set(OpenMP_omp_LIBRARY "/usr/local/opt/libomp/lib/libomp.dylib")
+    endif()
+endif()
+
 # Find OpenMP
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
