@@ -3,23 +3,23 @@ name: Build Wheels
 on:
   pull_request:
     paths:
-      - 'third_party/**'  # Third-party code changes
-      - 'epigeec/cc/**'  # C/C++ extension changes
-      - 'pyproject.toml'  # Potential build config changes
-      - '.github/workflows/build-wheels.yml'  # Workflow changes
+      - "third_party/**" # Third-party code changes
+      - "epigeec/cc/**" # C/C++ extension changes
+      - "pyproject.toml" # Potential build config changes
+      - ".github/workflows/build-wheels.yml" # Workflow changes
   release:
     types: [published]
   push:
     tags:
-      - 'test-*'  # Only trigger on test tags
-  workflow_dispatch:  # Allows manual triggering from GitHub UI
+      - "test-*" # Only trigger on test tags
+  workflow_dispatch: # Allows manual triggering from GitHub UI
 
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false  # Continue building other platforms if one fails
+      fail-fast: false # Continue building other platforms if one fails
       matrix:
         include:
           - os: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
       name: testpypi
       url: https://test.pypi.org/p/epigeec
     permissions:
-      id-token: write  # For trusted publishing
+      id-token: write # For trusted publishing
 
     steps:
       - uses: actions/download-artifact@v4
@@ -105,7 +105,7 @@ jobs:
       name: pypi
       url: https://pypi.org/p/epigeec
     permissions:
-      id-token: write  # For trusted publishing
+      id-token: write # For trusted publishing
 
     steps:
       - uses: actions/download-artifact@v4
