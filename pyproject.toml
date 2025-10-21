@@ -46,7 +46,7 @@ epigeec = [
 
 [tool.cibuildwheel]
 build = ["cp311-*", "cp312-*", "cp313-*"]
-skip = ["*-musllinux*"]
+skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
 before-build = [
     "pip install cmake",
     "cmake .",
@@ -57,7 +57,9 @@ before-build = [
 before-all = "yum install -y hdf5-devel boost-devel"
 
 [tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
 before-all = "brew install hdf5 boost"
+environment = {CMAKE_PREFIX_PATH = "/opt/homebrew;/usr/local"}
 
 [tool.pylint.main]
 extension-pkg-allow-list = [
