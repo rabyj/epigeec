@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64"] # wheel included by default with setuptools
+requires = ["setuptools>=64", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -22,6 +22,11 @@ dependencies = [
 
 [project.scripts]
 epigeec = "epigeec.python.core.main:cli"
+
+[tool.setuptools_scm]
+write_to = "epigeec/_version.py"
+version_scheme = "guess-next-dev"
+local_scheme = "no-local-version"
 
 [tool.setuptools]
 packages = {find = {}}

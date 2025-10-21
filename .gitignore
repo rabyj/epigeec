@@ -17,6 +17,7 @@ build/
 dist/
 *.egg-info/
 wheelhouse/
+epigeec/_version.py
 
 # Ignore compiled binaries and libraries
 epigeec/bin/*

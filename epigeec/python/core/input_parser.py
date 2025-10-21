@@ -14,18 +14,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
 
 import argparse
 
-import config
 import launcher
+
+from epigeec import __version__ as VERSION
 
 
 def parse_args(args):
     # fmt: off
     parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(config.VERSION))
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.")
 
     parser_hdf5 = subparsers.add_parser("to_hdf5", description="Average the signal in non-overlapping bins." ,help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools.")
