@@ -19,15 +19,27 @@ SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath,'$ORIGIN
 
 PROJECT( ${PROJ_NAME} )
 
+# Platform-specific settings
+if(APPLE)
+    SET(CMAKE_INSTALL_RPATH "@loader_path/../lib")
+    SET(CMAKE_MACOSX_RPATH ON)
+    # Add Homebrew library paths for all targets
+    link_directories(/opt/homebrew/lib /usr/local/lib)
+else() # Linux
+    SET(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,'$ORIGIN/../lib'")
+    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath,'$ORIGIN/../lib'")
+endif()
+
 # Find HDF5
 find_package(HDF5 COMPONENTS C HL REQUIRED)
 if(HDF5_FOUND)
     include_directories(${HDF5_INCLUDE_DIRS})
-    link_directories(${HDF5_LIBRARY_DIRS}) # macos: find libsz
     message(STATUS "HDF5 found: ${HDF5_LIBRARIES}")
 else()
     message(FATAL_ERROR "HDF5 not found!")
 endif()
+
 # Find Boost
 find_package(Boost COMPONENTS filesystem iostreams REQUIRED)
 if(Boost_FOUND)
@@ -35,6 +47,19 @@ if(Boost_FOUND)
     message(STATUS "Boost found: ${Boost_LIBRARIES}")
 else()
     message(FATAL_ERROR "Boost not found!")
+endif()
+
+# Find OpenMP
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    message(STATUS "OpenMP found: ${OpenMP_CXX_VERSION}")
+    # Make OpenMP flags available to all subdirectories
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    # Make OpenMP libraries available globally
+    link_libraries(OpenMP::OpenMP_CXX)
+else()
+    message(WARNING "OpenMP not found - building without OpenMP support")
 endif()
 
 ADD_SUBDIRECTORY( "third_party/bwreader" "bwreader" )
