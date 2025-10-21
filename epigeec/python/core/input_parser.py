@@ -28,6 +28,7 @@ def parse_args(args):
     parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
     parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.")
+    subparsers.required = True
 
     parser_hdf5 = subparsers.add_parser("to_hdf5", description="Average the signal in non-overlapping bins." ,help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools.")
     parser_hdf5.set_defaults(func=launcher.to_hdf5)
