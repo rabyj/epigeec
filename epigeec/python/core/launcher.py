@@ -31,21 +31,23 @@ def get_resolution(args):
         hdf5_path = args.hdf5
     except AttributeError:
         try:
-            hdf5_path = open(args.hdf5List).readline().strip()
-        except AttributeError:
+            with open(args.hdf5List, "r", encoding="utf8") as f:
+                hdf5_path = f.readline().strip()
+        except AttributeError as err:
             raise AssertionError(
                 "get_resolution called outside of filter or correlation mode"
-            )
+            ) from err
     return str(utils.read_compatibility_data(hdf5_path, args.chromSizes)["bin"])
 
 
 def get_resolution_from_list(hdf5_list, chrom_path):
     try:
-        hdf5_path = open(hdf5_list).readline().strip()
-    except AttributeError:
+        with open(hdf5_list, "r", encoding="utf8") as f:
+            hdf5_path = f.readline().strip()
+    except AttributeError as err:
         raise AssertionError(
             "get_resolution called outside of filter or correlation mode"
-        )
+        ) from err
     return str(utils.read_compatibility_data(hdf5_path, chrom_path)["bin"])
 
 
@@ -120,7 +122,7 @@ def corr(args):
 
 
 def prepend(file, s):
-    with open(file, "r+") as f:
+    with open(file, "r+", encoding="utf8") as f:
         content = ("%r" % s)[1:-1] + f.read()
         f.seek(0, 0)
         f.write(content)
