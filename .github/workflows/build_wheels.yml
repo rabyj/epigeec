@@ -83,12 +83,21 @@ jobs:
           CIBW_BUILD: ${{ steps.check.outputs.full_build == 'true' && '' || 'cp311-*' }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
 
+      # Create a sanitized string for the artifact name
+      # Since we can't use 'replace' directly in the upload-artifact name field
+      - name: Generate artifact name
+        id: artifact_name
+        shell: bash
+        run: |
+          archs="${{ matrix.cibw_archs }}"
+          echo "arch_string=${archs// /-}" >> $GITHUB_OUTPUT
+
       - uses: actions/upload-artifact@v4
         if: |
           !env.ACT &&
           (!matrix.needs_cpp || steps.check.outputs.full_build == 'true')
         with:
-          name: wheels-${{ matrix.os }}-${{ steps.check.outputs.full_build == 'true' && replace(matrix.cibw_archs, ' ', '-') || 'x86_64' }}
+          name: wheels-${{ matrix.os }}-${{ steps.check.outputs.full_build == 'true' && steps.artifact_name.outputs.arch_string || 'x86_64' }}
           path: dist/*.whl
 
   build_sdist:
