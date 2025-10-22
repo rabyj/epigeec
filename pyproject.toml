@@ -51,9 +51,10 @@ epigeec = [
 build = ["cp311-*", "cp312-*", "cp313-*"]
 skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
 before-build = [
-    "pip install cmake",
     "cmake .",
     "make -j $(nproc || echo 4)",
+    "echo '--- Filesystem after make ---'",
+    "ls -R"
 ]
 
 [tool.cibuildwheel.linux]
