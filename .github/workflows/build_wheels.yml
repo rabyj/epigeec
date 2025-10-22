@@ -75,6 +75,8 @@ jobs:
           !matrix.needs_cpp ||
           steps.check.outputs.full_build == 'true'
         uses: pypa/cibuildwheel@v2.21.0
+        with:
+          output-dir: dist
         env:
           # Only build x86_64 and Python 3.11 for quick builds
           CIBW_ARCHS: ${{ steps.check.outputs.full_build == 'true' && matrix.cibw_archs || 'x86_64' }}
@@ -98,7 +100,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build sdist
-        run: pipx run build --sdist
+        run: pipx run build --sdist --outdir dist
 
       - uses: actions/upload-artifact@v4
         with:
