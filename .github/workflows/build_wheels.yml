@@ -99,6 +99,11 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
 
+      - name: Delete test tag
+        if: always()  # Run even if publish fails
+        run: |
+          git push --delete origin ${GITHUB_REF#refs/tags/}
+
   publish_pypi:
     name: Publish to PyPI
     needs: [build_wheels, build_sdist]
