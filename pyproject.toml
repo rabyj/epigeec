@@ -27,9 +27,9 @@ epigeec = "epigeec.python.core.main:cli"
 
 [tool.setuptools_scm]
 write_to = "epigeec/_version.py"
-version_scheme = "guess-next-dev"
-local_scheme = "no-local-version"
-tag_regex = "^v?([0-9]+\\.[0-9]+\\.[0-9]+.*)$"  # Only match semantic versions
+version_scheme = "guess-next-dev" # default
+local_scheme = "no-local-version" # default
+git_describe_command = "git describe --tags --match '[0-9]*.[0-9]*.[0-9]*'"
 
 [tool.setuptools]
 include-package-data = false  # Don't auto-include everything

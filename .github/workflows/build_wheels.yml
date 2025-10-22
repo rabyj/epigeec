@@ -10,9 +10,9 @@ on:
   release:
     types: [published]
   push:
-    tags:
-      - "test-*" # Only trigger on test tags
-  workflow_dispatch: # Allows manual triggering from GitHub UI
+    branches:
+      - test-publish  # Push here for for testing build and publish to TestPyPI
+      - test-build # Push here for only build testing
 
 jobs:
   build_wheels:
@@ -70,11 +70,35 @@ jobs:
           name: sdist
           path: dist/*.tar.gz
 
+  test_wheel:
+    name: Test wheel
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-ubuntu-latest-*
+          merge-multiple: true
+          path: dist
+
+      - name: Install wheel and run tests
+        run: |
+          pip install dist/*x86_64.whl
+          python -Wd epigeec/test/test.py
+          python -Wd epigeec/test/filter_test.py
+
   publish_testpypi:
     name: Publish to TestPyPI
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels, build_sdist, test_wheel]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/test-pypi')
+    if: github.ref == 'refs/heads/test-publish'  # Only run on test-publish
     environment:
       name: testpypi
       url: https://test.pypi.org/p/epigeec
@@ -99,14 +123,9 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
 
-      - name: Delete test tag
-        if: always()  # Run even if publish fails
-        run: |
-          git push --delete origin ${GITHUB_REF#refs/tags/}
-
   publish_pypi:
     name: Publish to PyPI
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels, build_sdist, test_wheel]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     environment:
