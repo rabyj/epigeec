@@ -1,18 +1,14 @@
 name: Build Wheels
 
 on:
-  pull_request:
-    paths:
-      - "third_party/**" # Third-party code changes
-      - "epigeec/cc/**" # C/C++ extension changes
-      - "pyproject.toml" # Potential build config changes
-      - ".github/workflows/build-wheels.yml" # Workflow changes
+  pull_request:  # Run on all PRs, decide what to build inside the workflow
   release:
     types: [published]
   push:
     branches:
-      - test-publish  # Push here for for testing build and publish to TestPyPI
-      - test-build # Push here for only build testing
+      - test-publish # Push here for quick build and publish to TestPyPI
+      - test-build-full # Push here for full build tests
+      - test-build-quick # Push here for quick build tests
 
 jobs:
   build_wheels:
@@ -24,34 +20,74 @@ jobs:
         include:
           - os: ubuntu-latest
             cibw_archs: "x86_64 aarch64"
+
           - os: macos-13 # Intel Mac for x86_64 - could not build without specifying 13.0
             cibw_archs: "x86_64"
             deployment_target: "13.0"
+            needs_cpp: true
+
           - os: macos-14 # Apple Silicon - could not build without specifying 14.0
             cibw_archs: "arm64"
             deployment_target: "14.0"
+            needs_cpp: true
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Need it for setuptools-scm versioning
-          fetch-tags: true # Redundant but clear
+          fetch-depth: 0 # full history with tags for setuptools_scm
+
+      # Explicitly checks branch names and event types
+      # to correctly determine if a full or quick build is needed.
+      - name: Check if full build needed
+        id: check
+        run: |
+          full_build=false
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "Release event detected. Forcing full build."
+            full_build=true
+          elif [[ "${{ github.ref_name }}" == "test-build-full" ]]; then
+            echo "Push to '${{ github.ref_name }}' branch. Forcing full build."
+            full_build=true
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Pull request detected. Checking for C++ file changes."
+            # safer diff for forked PRs
+            git fetch origin ${{ github.base_ref }} --depth=1
+            if git diff --name-only FETCH_HEAD...HEAD | grep -qE '^(third_party/|epigeec/cc/)'; then
+              echo "C++ files were modified. Forcing full build."
+              full_build=true
+            else
+              echo "No C++ files modified. Using quick build."
+            fi
+          else
+            echo "Defaulting to quick build for branch '${{ github.ref_name }}'."
+          fi
+          echo "full_build=$full_build" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU (for ARM on Linux)
-        if: runner.os == 'Linux'
+        if: |
+          runner.os == 'Linux' &&
+          steps.check.outputs.full_build == 'true' &&
+          contains(matrix.cibw_archs, 'aarch64')
         uses: docker/setup-qemu-action@v3
 
       - name: Build wheels
+        if: |
+          !matrix.needs_cpp ||
+          steps.check.outputs.full_build == 'true'
         uses: pypa/cibuildwheel@v2.21.0
         env:
-          CIBW_ARCHS: ${{ matrix.cibw_archs }} # Pass archs to cibuildwheel
-          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }} # Set deployment target if defined
+          # Only build x86_64 and Python 3.11 for quick builds
+          CIBW_ARCHS: ${{ steps.check.outputs.full_build == 'true' && matrix.cibw_archs || 'x86_64' }}
+          CIBW_BUILD: ${{ steps.check.outputs.full_build == 'true' && '' || 'cp311-*' }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
 
       - uses: actions/upload-artifact@v4
-        if: ${{ !env.ACT }} # Skip upload when running locally with 'act'
+        if: |
+          !env.ACT &&
+          (!matrix.needs_cpp || steps.check.outputs.full_build == 'true')
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
-          path: ./dist/*.whl
+          name: wheels-${{ matrix.os }}-${{ steps.check.outputs.full_build == 'true' && replace(matrix.cibw_archs, ' ', '-') || 'x86_64' }}
+          path: dist/*.whl
 
   build_sdist:
     name: Build source distribution
@@ -60,7 +96,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          fetch-tags: true
 
       - name: Build sdist
         run: pipx run build --sdist
