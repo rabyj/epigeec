@@ -25,7 +25,7 @@ from epigeec import __version__ as VERSION
 
 def parse_args(args):
     # fmt: off
-    parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
+    parser = argparse.ArgumentParser(prog='epiGeEC', description = "epiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
     parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.")
     subparsers.required = True
