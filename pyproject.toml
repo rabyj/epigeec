@@ -44,7 +44,8 @@ epigeec = [
     "bin/*",
     "lib/*.so",
     "lib/*.so.*",
-    "resource/chrom_sizes/*.sizes",
+    "resource/*",
+    "resource/**/*",
 ]
 
 [tool.cibuildwheel]
