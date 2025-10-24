@@ -24,15 +24,14 @@ jobs:
           - os: macos-13 # Intel Mac for x86_64 - could not build without specifying 13.0
             cibw_archs: "x86_64"
             deployment_target: "13.0"
-            needs_cpp: true
 
           - os: macos-14 # Apple Silicon - could not build without specifying 14.0
             cibw_archs: "arm64"
             deployment_target: "14.0"
-            needs_cpp: true
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # full history with tags for setuptools_scm
 
@@ -70,18 +69,29 @@ jobs:
           contains(matrix.cibw_archs, 'aarch64')
         uses: docker/setup-qemu-action@v3
 
-      - name: Build wheels
-        if: |
-          !matrix.needs_cpp ||
-          steps.check.outputs.full_build == 'true'
+      # Do not set CIBW_BUILD here, let pyproject.toml handle it
+      - name: Build wheels (full build)
+        if: steps.check.outputs.full_build == 'true'
         uses: pypa/cibuildwheel@v3.2.1
         with:
           output-dir: dist
           config-file: pyproject.toml
         env:
-          # Only build x86_64 and Python 3.11 for quick builds
-          CIBW_ARCHS: ${{ steps.check.outputs.full_build == 'true' && matrix.cibw_archs || 'x86_64' }}
-          CIBW_BUILD: ${{ steps.check.outputs.full_build == 'true' && '' || 'cp311-*' }}
+          CIBW_ARCHS: ${{ matrix.cibw_archs }}
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
+
+      # Set CIBW_BUILD for quick builds (Linux only, Python 3.11 only)
+      - name: Build wheels (quick build)
+        if: |
+          steps.check.outputs.full_build == 'false' &&
+          runner.os == 'Linux'
+        uses: pypa/cibuildwheel@v3.2.1
+        with:
+          output-dir: dist
+          config-file: pyproject.toml
+        env:
+          CIBW_ARCHS: x86_64
+          CIBW_BUILD: cp311-*
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
 
       # Create a sanitized string for the artifact name
@@ -93,13 +103,14 @@ jobs:
           archs="${{ matrix.cibw_archs }}"
           echo "arch_string=${archs// /-}" >> $GITHUB_OUTPUT
 
-      - uses: actions/upload-artifact@v4
-        if: |
-          !env.ACT &&
-          (!matrix.needs_cpp || steps.check.outputs.full_build == 'true')
+      # Upload built wheels
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        if: "!env.ACT"
         with:
           name: wheels-${{ matrix.os }}-${{ steps.check.outputs.full_build == 'true' && steps.artifact_name.outputs.arch_string || 'x86_64' }}
           path: dist/*.whl
+          if-no-files-found: ignore  # Don't fail if no wheels were built
 
   build_sdist:
     name: Build source distribution
