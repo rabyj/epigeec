@@ -15,6 +15,7 @@ Makefile
 # Python build artifacts
 build/
 dist/
+wheelhouse/
 *.egg-info/
 __pycache__/
 _version.py
