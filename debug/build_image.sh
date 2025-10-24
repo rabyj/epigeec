@@ -7,15 +7,17 @@ export DOCKER_BUILDKIT=1
 if [ "$1" == "yum" ]; then
     build_file="debug/Dockerfile.yum"
     tag="custom-manylinux_2_28_x86_64"
+    cache=""
 elif [ "$1" == "cmake" ]; then
     build_file="debug/Dockerfile.cmake"
     tag="custom-manylinux_2_28_x86_64-epigeec-built"
+    cache="--no-cache"
 else
     echo "Usage: $0 [yum|cmake]"
     exit 1
 fi
 
-docker build -f $build_file -t $tag .
+docker build $cache --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g) -f $build_file -t $tag .
 
 echo "Custom manylinux image '$tag' built successfully."
 echo "You can now use this image in cibuildwheel or run it directly."

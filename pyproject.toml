@@ -50,13 +50,14 @@ epigeec = [
 ]
 
 # ---  CIBUILDWHEEL CONFIGURATION ---
+# Build wheels for multiple platforms and Python versions using cibuildwheel.
+# Depends on setup.py being properly configured for compiling the C++ programs.
+# 'before-all' installs system dependencies required for building the C++ extensions.
+# Then cibuildwheel calls the build backend (setuptools.build_meta) which triggers setup.py's CustomBuild class.
 
 [tool.cibuildwheel]
 build = ["cp311-*", "cp312-*", "cp313-*"]
 skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
-
-# Define build commands as env var. Run once per architecture.
-environment = {EPIGEEC_BUILD = "git clean -fdx && cmake . && make -j $(nproc --all)"}
 
 # Run tests (runs after each wheel is built)
 test-command = [
@@ -72,7 +73,6 @@ manylinux-aarch64-image = "manylinux_2_28"
 before-all = [
     "yum install -y epel-release",  # Enable EPEL repository first, package names changed with manylinux_2_28
     "yum install -y hdf5-devel boost-devel",
-    "bash -c \"$EPIGEEC_BUILD\"",
 ]
 
 [tool.cibuildwheel.macos]
@@ -81,7 +81,6 @@ environment = {CMAKE_PREFIX_PATH = "/opt/homebrew:/usr/local:/opt/local"}
 
 before-all = [
     "brew install hdf5 boost libomp",
-    "bash -c \"$EPIGEEC_BUILD\"",
 ]
 
 # ---  LINTING CONFIGURATION ---

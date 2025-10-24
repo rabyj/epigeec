@@ -1,27 +1,31 @@
+# General ignores
 .DS_Store
 .vscode
-*.pyc
 *.swp
-
-# Ignore all build artifacts
 *.o
-*.a
-*.so
-*.so.*
-*.dylib
-CMakeCache.txt
+
+# CMake artifacts
 CMakeFiles/
-cmake_install.cmake
+CMakeCache.txt
 Makefile
+*.cmake
+*.a
+!CMakeLists.txt
+
+# Python build artifacts
 build/
 dist/
 *.egg-info/
-wheelhouse/
-epigeec/_version.py
+__pycache__/
+_version.py
+*.pyc
 
-# Ignore compiled binaries and libraries
+# Compiled binaries
 epigeec/bin/*
 epigeec/lib/*
+*.so
+*.so.*
+*.dylib
 
 # Keep directory structure
 !epigeec/bin/.gitkeep
