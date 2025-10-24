@@ -74,9 +74,10 @@ jobs:
         if: |
           !matrix.needs_cpp ||
           steps.check.outputs.full_build == 'true'
-        uses: pypa/cibuildwheel@v2.21.0
+        uses: pypa/cibuildwheel@v3.2.1
         with:
           output-dir: dist
+          config-file: pyproject.toml
         env:
           # Only build x86_64 and Python 3.11 for quick builds
           CIBW_ARCHS: ${{ steps.check.outputs.full_build == 'true' && matrix.cibw_archs || 'x86_64' }}
@@ -116,33 +117,9 @@ jobs:
           name: sdist
           path: dist/*.tar.gz
 
-  test_wheel:
-    name: Test wheel
-    needs: [build_wheels]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: wheels-ubuntu-latest-*
-          merge-multiple: true
-          path: dist
-
-      - name: Install wheel and run tests
-        run: |
-          pip install dist/*x86_64.whl
-          python -Wd epigeec/test/test.py
-          python -Wd epigeec/test/filter_test.py
-
   publish_testpypi:
     name: Publish to TestPyPI
-    needs: [build_wheels, build_sdist, test_wheel]
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/test-publish' # Only run on test-publish
     environment:
@@ -171,7 +148,7 @@ jobs:
 
   publish_pypi:
     name: Publish to PyPI
-    needs: [build_wheels, build_sdist, test_wheel]
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     environment:

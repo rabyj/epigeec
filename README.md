@@ -111,7 +111,6 @@ Using an isolated Python environment helps avoid version conflicts:
 ```bash
 python3 -m venv env
 source env/bin/activate
-pip install -U pip
 pip install epigeec
 ```
 
@@ -188,8 +187,6 @@ sudo apt install build-essential python3-dev cmake libhdf5-dev
 brew install cmake hdf5
 ```
 
----
-
 #### Clone the repository
 
 ```bash
@@ -205,18 +202,11 @@ source env/bin/activate
 pip install setuptools wheel
 ```
 
-**Option A**: Build using the provided script (recommended)
-
-```bash
-bash build_wheel.sh
-pip install dist/*.whl
-```
-
-**Option B**: Build manually
+#### Build and install epiGeEC
 
 ```bash
 cmake .
-make
+make -j $(nproc --all) # build with all available cores
 pip install .
 ```
 

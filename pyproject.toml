@@ -1,3 +1,5 @@
+# --- PYTHON BUILD SYSTEM CONFIGURATION ---
+
 [build-system]
 requires = [
     "setuptools>=64,<77", # Setuptools>=77.0.0 requires "packaging>=24.2", which breaks cibuildwheel builds on macos.
@@ -37,41 +39,56 @@ include-package-data = false  # Don't auto-include everything
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["epigeec*"]
-exclude = ["epigeec.test*", "epigeec.cc*"]  # Exclude test and C++ source from packages
+exclude = ["epigeec.test*", "epigeec.cc*"]  # Exclude test and C++ source from wheels
 
 [tool.setuptools.package-data]
 epigeec = [
     "bin/*",
     "lib/*.so",
     "lib/*.so.*",
-    "resource/*",
-    "resource/**/*",
+    # "resource/**", # Removing resource files for now, to minimize wheel size. They are tracked by git anyway.
 ]
+
+# ---  CIBUILDWHEEL CONFIGURATION ---
 
 [tool.cibuildwheel]
 build = ["cp311-*", "cp312-*", "cp313-*"]
 skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
-before-build = [
-    "cmake .",
-    "make -j $(nproc || echo 4)",
-    "echo '--- Filesystem after make ---'",
-    "ls -R"
+
+# Define build commands as env var. Run once per architecture.
+environment = {EPIGEEC_BUILD = "git clean -fdx && cmake . && make -j $(nproc --all)"}
+
+# Run tests only on some platforms (runs after each wheel is built)
+test-skip = [
+    "*-macosx_*",       # skip macOS tests
+    "*-manylinux_aarch64"  # skip Linux aarch64 tests
+]
+test-command = [
+  "python -Wd {project}/epigeec/test/filter_test.py",
+  "python -Wd {project}/epigeec/test/test.py",
 ]
 
 [tool.cibuildwheel.linux]
 archs = ["auto"] # handled in build matrix in GitHub Actions
 manylinux-x86_64-image = "manylinux_2_28"  # manylinux2014 is deprecated since 2024
 manylinux-aarch64-image = "manylinux_2_28"
+
 before-all = [
     "yum install -y epel-release",  # Enable EPEL repository first, package names changed with manylinux_2_28
-    "yum install -y hdf5-devel boost-devel"
+    "yum install -y hdf5-devel boost-devel",
+    "bash -c \"$EPIGEEC_BUILD\"",
 ]
 
 [tool.cibuildwheel.macos]
 archs = ["auto"]  # handled in build matrix in GitHub Actions
-before-all = "brew install hdf5 boost libomp"
 environment = {CMAKE_PREFIX_PATH = "/opt/homebrew:/usr/local:/opt/local"}
 
+before-all = [
+    "brew install hdf5 boost libomp",
+    "bash -c \"$EPIGEEC_BUILD\"",
+]
+
+# ---  LINTING CONFIGURATION ---
 [tool.pylint.main]
 extension-pkg-allow-list = [
     "pyBigWig",
