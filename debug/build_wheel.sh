@@ -2,10 +2,11 @@
 set -e
 
 # Clean previous build artifacts
-rm -rf build/ dist/ CMakeCache.txt CMakeFiles/ ./*.egg-info ./*/CMakeFiles/
+git clean -fdx
 
-# Build C code
+cmake --version
 cmake .
+
 make -j "$(nproc --all)"
 
 # Build wheel
@@ -21,6 +22,14 @@ if [[ $WHEEL == *"none-any"* ]]; then
     echo "Check your setup.py/pyproject.toml configuration."
     exit 1
 fi
+
+pip install auditwheel-symbols
+
+auditwheel-symbols --manylinux 2_28 $WHEEL || {
+    echo "ERROR: auditwheel-symbols failed to identify symbols in the wheel."
+    echo "This may indicate missing shared library dependencies."
+    exit 1
+}
 
 echo "Repairing wheel: $WHEEL"
 auditwheel repair "$WHEEL" -w dist/
