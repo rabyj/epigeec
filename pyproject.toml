@@ -24,6 +24,12 @@ dependencies = [
     "future",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pyBigWig",
+]
+
 [project.scripts]
 epigeec = "epigeec.python.core.main:cli"
 
@@ -49,6 +55,7 @@ epigeec = [
     # "resource/**", # Removing resource files for now, to minimize wheel size. They are tracked by git anyway.
 ]
 
+
 # ---  CIBUILDWHEEL CONFIGURATION ---
 # Build wheels for multiple platforms and Python versions using cibuildwheel.
 # Depends on setup.py being properly configured for compiling the C++ programs.
@@ -61,8 +68,8 @@ skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
 
 # Run tests (runs after each wheel is built)
 test-command = [
-  "python -Wd {project}/epigeec/test/filter_test.py",
-  "python -Wd {project}/epigeec/test/test.py",
+    "pip install pytest pyBigWig",
+    "pytest {project}/epigeec/test",
 ]
 
 [tool.cibuildwheel.linux]
@@ -83,8 +90,20 @@ before-all = [
     "brew install hdf5 boost libomp",
 ]
 
-# ---  LINTING CONFIGURATION ---
+
+# ---  OTHER CONFIGURATION ---
+
 [tool.pylint.main]
 extension-pkg-allow-list = [
     "pyBigWig",
+]
+
+[tool.pytest.ini_options]
+# Add the project root to the Python path.
+# This makes the 'epigeec' package importable.
+pythonpath = "."
+
+# Tell pytest where to find tests, which is more explicit.
+testpaths = [
+    "epigeec/test"
 ]
