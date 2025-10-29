@@ -20,6 +20,7 @@ wheelhouse/
 __pycache__/
 _version.py
 *.pyc
+.venv/
 
 # Compiled binaries
 epigeec/bin/*
