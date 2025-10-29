@@ -28,6 +28,7 @@ dependencies = [
 test = [
     "pytest",
     "pyBigWig",
+    "pytest-json-ctrf",
 ]
 dev = ["epigeec[test]"] # alias for test
 
@@ -71,9 +72,10 @@ skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
 # Run pytest with CTRF report output, report name is {env:var:default} so it can be set from GitHub Actions workflow
 # 'build_id' is set by cibuildwheel automatically.
 # 'CI_MATRIX_OS' is set in the GitHub Actions workflow to identify the OS in the report filename.
+test-extras = "test" # installs epigeec[test]
 test-command = [
-    "pip install pytest pyBigWig pytest-json-ctrf",
-    "pytest {project}/epigeec/test --ctrf=reports/ctrf-report-{env:CI_MATRIX_OS:local}-{build_id}.json",
+    "pytest {project}/epigeec/test --ctrf=\"reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
+    "mkdir -p /output/reports && mv reports/* /output/reports/",
 ]
 
 [tool.cibuildwheel.linux]

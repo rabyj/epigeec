@@ -149,7 +149,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: reports/
+          path: dist/reports/
           if-no-files-found: ignore  # Don't fail if no reports were generated
 
 
