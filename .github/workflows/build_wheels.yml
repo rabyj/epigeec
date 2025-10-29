@@ -1,7 +1,9 @@
-name: Build Wheels
+# .github/workflows/build_wheels.yml
+name: Build and Test Wheels
 
 on:
-  pull_request: # Run on all PRs, decide what to build inside the workflow
+  pull_request:
+    types: [opened, synchronize, reopened]
   release:
     types: [published]
   push:
@@ -10,10 +12,38 @@ on:
       - test-build-full # Push here for full build tests
       - test-build-quick # Push here for quick build tests
 
+# Set default permissions to be read-only for security.
+permissions: read-all
+
 jobs:
+
+  # Prepare PR Information for Reporting Tests
+  prepare:
+    name: Prepare PR Information
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    outputs:
+      pr_number: ${{ steps.pr_info.outputs.pr_number }}
+    steps:
+      - name: Save PR Number for reporting workflow
+        id: pr_info
+        run: |
+          echo "${{ github.event.pull_request.number }}" > pr_number.txt
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
+      - name: Upload PR Number Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr_number
+          path: pr_number.txt
+
+
+  # Build wheels for multiple platforms, and test them, uploading results for reporting.
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      CI_MATRIX_OS: ${{ matrix.os }} # Unique identifier for test reporting
     strategy:
       fail-fast: false # Continue building other platforms if one fails
       matrix:
@@ -112,6 +142,18 @@ jobs:
           path: dist/*.whl
           if-no-files-found: ignore  # Don't fail if no wheels were built
 
+      # Upload test results.
+      # cibuildwheel writes tests to `reports` directory, this grabs all reports.
+      - name: Upload Test Report Artifact
+        if: "!env.ACT"
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: reports/
+          if-no-files-found: ignore  # Don't fail if no reports were generated
+
+
+  # Build source distribution for publishing
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
@@ -128,6 +170,8 @@ jobs:
           name: sdist
           path: dist/*.tar.gz
 
+
+  # Publish to TestPyPI on test-publish branch, PyPI on release
   publish_testpypi:
     name: Publish to TestPyPI
     needs: [build_wheels, build_sdist]
@@ -157,6 +201,8 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
 
+
+  # Publish to PyPI on release
   publish_pypi:
     name: Publish to PyPI
     needs: [build_wheels, build_sdist]
