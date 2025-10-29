@@ -34,6 +34,8 @@ epigeec/lib/*
 !epigeec/lib/.gitkeep
 
 # Ignore auto-generated test files
+reports/
+.pytest_cache/
 epigeec/test/files/test.mat
 epigeec/test/test_list*.txt
 epigeec/test/files/hdf5/d9f18e91644bacfee3669d577b661d15
