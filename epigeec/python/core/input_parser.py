@@ -54,6 +54,6 @@ def parse_args(args):
     parser_corr.add_argument("hdf5List", help="The list of HDF5 files to correlate, one file per line. (TEXT)")
     parser_corr.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
     parser_corr.add_argument("outMatrix", help="The final tab-delimited matrix file. (TEXT)")
-    parser_corr.add_argument('--desc', type=str, default="")
+    parser_corr.add_argument('-n', "--name", type=str, default="", help="Optional name for the correlation run to be included in the output matrix header. (STRING)")
     # fmt: on
     return parser.parse_args(args)

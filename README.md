@@ -51,7 +51,7 @@ usage: epigeec filter [-h] [--select SELECT] [--exclude EXCLUDE] hdf5 chromSizes
 Generate an NxN Pearson correlation matrix
 
 ```bash
-usage: epigeec correlate [-h] [--concat] [--desc] hdf5List chromSizes outMatrix 
+usage: epigeec correlate [-h] [--concat] [--name] hdf5List chromSizes outMatrix 
 ```
 
 ### Resources and filters
@@ -86,7 +86,7 @@ Start running the tools
 ```bash
 epigeec to_hdf5 -bw signal/myfile.bw resource/chrom_sizes 1000 hdf5/myfile.hdf5
 epigeec filter hdf5/myfile.hdf5 resource/chrom_sizes filtered/myfile.hdf5 -s resource/sel.bed -e resource/excl.bed
-epigeec correlate filtered_list resource/chrom_sizes mymatrix.mat --desc 5dts_1kb 
+epigeec correlate filtered_list resource/chrom_sizes mymatrix.mat --name 5dts_1kb 
 ```
 
 The output is a tab separated matrix file with your correlations

@@ -65,7 +65,7 @@ def launch_corr_w(list_path, chrom_path, mat_path):
     args = [
         "correlate",
         "--concat",
-        "--desc",
+        "--name",
         "ed 23\t\nsdn",
         list_path,
         chrom_path,
