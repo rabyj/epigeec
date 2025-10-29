@@ -28,6 +28,7 @@ dependencies = [
 test = [
     "pytest",
     "pyBigWig",
+    "pytest-json-ctrf",
 ]
 dev = ["epigeec[test]"] # alias for test
 
@@ -68,13 +69,7 @@ epigeec = [
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
 
-# Run pytest with CTRF report output, report name is {env:var:default} so it can be set from GitHub Actions workflow
-# 'build_id' is set by cibuildwheel automatically.
-# 'CI_MATRIX_OS' is set in the GitHub Actions workflow to identify the OS in the report filename.
-test-command = [
-    "pip install pytest pyBigWig pytest-json-ctrf",
-    "pytest {project}/epigeec/test --ctrf=reports/ctrf-report-{env:CI_MATRIX_OS:local}-{build_id}.json",
-]
+test-extras = "test" # installs epigeec[test]
 
 [tool.cibuildwheel.linux]
 archs = ["auto"] # handled in build matrix in GitHub Actions
@@ -86,6 +81,14 @@ before-all = [
     "yum install -y hdf5-devel boost-devel",
 ]
 
+# Linux-specific: Use /output to persist files from Docker container to host.
+test-command = [
+    "WHEEL_NAME=$(basename {wheel} .whl)",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
+    "mkdir -p /output/reports && cp -r {project}/reports/* /output/reports/",
+]
+
+
 [tool.cibuildwheel.macos]
 archs = ["auto"]  # handled in build matrix in GitHub Actions
 environment = {CMAKE_PREFIX_PATH = "/opt/homebrew:/usr/local:/opt/local"}
@@ -94,6 +97,11 @@ before-all = [
     "brew install hdf5 boost libomp",
 ]
 
+# macOS-specific: Write directly to project directory since no container is used.
+test-command = [
+    "WHEEL_NAME=$(basename {wheel} .whl)",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
+]
 
 # ---  OTHER CONFIGURATION ---
 

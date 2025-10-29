@@ -138,7 +138,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: "!env.ACT"
         with:
-          name: wheels-${{ matrix.os }}-${{ steps.check.outputs.full_build == 'true' && steps.artifact_name.outputs.arch_string || 'x86_64' }}
+          name: wheels-${{ matrix.os }}-${{ steps.artifact_name.outputs.arch_string }}
           path: dist/*.whl
           if-no-files-found: ignore  # Don't fail if no wheels were built
 
@@ -148,8 +148,11 @@ jobs:
         if: "!env.ACT"
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: reports/
+          name: test-results-${{ matrix.os }}-${{ steps.artifact_name.outputs.arch_string }}
+          # Look for reports in both possible locations
+          path: |
+            reports/
+            dist/reports/
           if-no-files-found: ignore  # Don't fail if no reports were generated
 
 
