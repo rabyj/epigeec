@@ -19,7 +19,7 @@ def is_binary(filepath: str | Path) -> bool:
             chunk = f.read(1024)
             if b"\0" in chunk:
                 return True
-    except Exception as err:
+    except OSError as err:
         print(f"Error checking if file is binary: {err}", file=sys.stderr)
         return False
     return False
