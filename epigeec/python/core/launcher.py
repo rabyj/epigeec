@@ -118,7 +118,7 @@ def corr(args):
         args.outMatrix,
     ]
     subprocess.call(command)
-    prepend(args.outMatrix, args.desc)
+    prepend(args.outMatrix, args.name)
 
 
 def prepend(file, s):
@@ -128,7 +128,7 @@ def prepend(file, s):
         f.write(content)
 
 
-def corr_nm(is_kent, list_path1, list_path2, chrom_path, mat_path, desc=""):
+def corr_nm(is_kent, list_path1, list_path2, chrom_path, mat_path):
     validators.valid_hdf5_list(list_path1)
     validators.valid_hdf5_list(list_path2)
     validators.valid_chromsizes(chrom_path)
