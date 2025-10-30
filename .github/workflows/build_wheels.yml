@@ -37,11 +37,48 @@ jobs:
           name: pr_number
           path: pr_number.txt
 
+  # Explicitly checks branch names and event types
+  # to correctly determine if a full or quick build is needed.
+  determine_build_type:
+    name: Determine Build Strategy
+    runs-on: ubuntu-latest
+    outputs:
+      full_build: ${{ steps.check.outputs.full_build }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if full build needed
+        id: check
+        run: |
+          full_build=false
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "Release event detected. Forcing full build."
+            full_build=true
+          elif [[ "${{ github.ref_name }}" == "test-build-full" ]]; then
+            echo "Push to '${{ github.ref_name }}' branch. Forcing full build."
+            full_build=true
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Pull request detected. Checking for C++ file changes."
+            git fetch origin ${{ github.base_ref }} --depth=1
+            if git diff --name-only FETCH_HEAD...HEAD | grep -qE '^(third_party/|epigeec/cc/)'; then
+              echo "C++ files were modified. Forcing full build."
+              full_build=true
+            else
+              echo "No C++ files modified. Using quick build."
+            fi
+          else
+            echo "Defaulting to quick build for branch '${{ github.ref_name }}'."
+          fi
+          echo "full_build=$full_build" >> $GITHUB_OUTPUT
 
   # Build wheels for multiple platforms, and test them, uploading results for reporting.
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    needs: determine_build_type
     env:
       CI_MATRIX_OS: ${{ matrix.os }} # Unique identifier for test reporting
     strategy:
@@ -65,43 +102,16 @@ jobs:
         with:
           fetch-depth: 0 # full history with tags for setuptools_scm
 
-      # Explicitly checks branch names and event types
-      # to correctly determine if a full or quick build is needed.
-      - name: Check if full build needed
-        id: check
-        run: |
-          full_build=false
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            echo "Release event detected. Forcing full build."
-            full_build=true
-          elif [[ "${{ github.ref_name }}" == "test-build-full" ]]; then
-            echo "Push to '${{ github.ref_name }}' branch. Forcing full build."
-            full_build=true
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "Pull request detected. Checking for C++ file changes."
-            # safer diff for forked PRs
-            git fetch origin ${{ github.base_ref }} --depth=1
-            if git diff --name-only FETCH_HEAD...HEAD | grep -qE '^(third_party/|epigeec/cc/)'; then
-              echo "C++ files were modified. Forcing full build."
-              full_build=true
-            else
-              echo "No C++ files modified. Using quick build."
-            fi
-          else
-            echo "Defaulting to quick build for branch '${{ github.ref_name }}'."
-          fi
-          echo "full_build=$full_build" >> $GITHUB_OUTPUT
-
       - name: Set up QEMU (for ARM on Linux)
         if: |
           runner.os == 'Linux' &&
-          steps.check.outputs.full_build == 'true' &&
+          needs.determine_build_type.outputs.full_build == 'true' &&
           contains(matrix.cibw_archs, 'aarch64')
         uses: docker/setup-qemu-action@v3
 
       # Do not set CIBW_BUILD here, let pyproject.toml handle it
       - name: Build wheels (full build)
-        if: steps.check.outputs.full_build == 'true'
+        if: needs.determine_build_type.outputs.full_build == 'true'
         uses: pypa/cibuildwheel@v3.2.1
         with:
           output-dir: dist
@@ -113,7 +123,7 @@ jobs:
       # Set CIBW_BUILD for quick builds (Python 3.11 only)
       - name: Build wheels (quick build)
         if: |
-          steps.check.outputs.full_build == 'false' &&
+          needs.determine_build_type.outputs.full_build == 'false' &&
           (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-14')
         uses: pypa/cibuildwheel@v3.2.1
         with:
@@ -160,7 +170,8 @@ jobs:
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
-    if: steps.check.outputs.full_build == 'true'
+    needs: determine_build_type
+    if: needs.determine_build_type.outputs.full_build == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
