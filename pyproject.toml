@@ -64,19 +64,16 @@ epigeec = [
 # 'before-all' installs system dependencies required for building the C++ extensions.
 # Then cibuildwheel calls the build backend (setuptools.build_meta) which triggers setup.py's CustomBuild class.
 
+# Test command: We run pytest with CTRF report output, report name is {env:var:default} so it can be set from GitHub Actions workflow
+# 'build_id' is set by cibuildwheel automatically.
+# 'CI_MATRIX_OS' is set in the GitHub Actions workflow to identify the OS in the report filename.
+
 [tool.cibuildwheel]
 # To test locally, run: cibuildwheel --only cp311-manylinux_x86_64
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 skip = ["*-musllinux*", "*-manylinux_i686"] # ignore 32-bit Linux builds
 
-# Run pytest with CTRF report output, report name is {env:var:default} so it can be set from GitHub Actions workflow
-# 'build_id' is set by cibuildwheel automatically.
-# 'CI_MATRIX_OS' is set in the GitHub Actions workflow to identify the OS in the report filename.
 test-extras = "test" # installs epigeec[test]
-test-command = [
-    "pytest {project}/epigeec/test --ctrf=\"reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
-    "mkdir -p /output/reports && mv reports/* /output/reports/",
-]
 
 [tool.cibuildwheel.linux]
 archs = ["auto"] # handled in build matrix in GitHub Actions
@@ -88,6 +85,14 @@ before-all = [
     "yum install -y hdf5-devel boost-devel",
 ]
 
+# Linux-specific: Use /output to persist files from Docker container to host.
+test-command = [
+    "cd \"$CIBW_PROJECT_DIR\"",
+    "pytest {project}/epigeec/test --ctrf=\"reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
+    "mkdir -p /output/reports && cp -r reports/* /output/reports/",
+]
+
+
 [tool.cibuildwheel.macos]
 archs = ["auto"]  # handled in build matrix in GitHub Actions
 environment = {CMAKE_PREFIX_PATH = "/opt/homebrew:/usr/local:/opt/local"}
@@ -96,6 +101,11 @@ before-all = [
     "brew install hdf5 boost libomp",
 ]
 
+# macOS-specific: Write directly to project directory since /output is not available.
+test-command = [
+    "cd \"$CIBW_PROJECT_DIR\"",
+    "pytest {project}/epigeec/test --ctrf=\"reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
+]
 
 # ---  OTHER CONFIGURATION ---
 
