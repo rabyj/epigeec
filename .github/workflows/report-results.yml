@@ -1,0 +1,61 @@
+name: Report Test Results
+on:
+  workflow_run:
+    workflows: ["Build and Test Wheels"] # Match the 'name:' of the first workflow
+    types:
+      - completed
+  workflow_dispatch:  # Manual trigger for testing
+    inputs:
+      run_id:
+        description: 'Workflow run ID from build_wheels.yml'
+        required: true
+        type: string
+
+jobs:
+  report:
+    name: Publish Test Report
+    runs-on: ubuntu-latest
+    # Only run for pull requests, or allow manual dispatch
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'pull_request'
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      # Set the run_id to use based on trigger type
+      - name: Determine run ID
+        id: run_id
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "id=${{ inputs.run_id }}" >> $GITHUB_OUTPUT
+          else
+            echo "id=${{ github.event.workflow_run.id }}" >> $GITHUB_OUTPUT
+          fi
+
+      # Download PR number artifact created by main workflow
+      - name: Download PR Number artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          name: pr_number
+          run_id: ${{ steps.run_id.outputs.id }}
+
+      - name: Read PR number from file
+        id: pr_number
+        run: echo "number=$(cat pr_number.txt)" >> $GITHUB_OUTPUT
+
+      # Download all test result artifacts
+      - name: Download all test result artifacts
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          name_pattern: test-results-*
+          run_id: ${{ steps.run_id.outputs.id }}
+          path: all-test-results
+
+      # Publish test report
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v1
+        with:
+          name: Pytest Results (${{ github.event.workflow_run.conclusion || 'manual' }})
+          path: 'all-test-results/**/*.json'
+          reporter: 'ctrf'
+          pull-request-number: ${{ steps.pr_number.outputs.number }}
