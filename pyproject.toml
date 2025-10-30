@@ -83,7 +83,8 @@ before-all = [
 
 # Linux-specific: Use /output to persist files from Docker container to host.
 test-command = [
-    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-{wheel}.json\"",
+    "WHEEL_NAME=$(basename {wheel} .whl)",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
     "mkdir -p /output/reports && cp -r {project}/reports/* /output/reports/",
 ]
 
@@ -98,7 +99,8 @@ before-all = [
 
 # macOS-specific: Write directly to project directory since no container is used.
 test-command = [
-    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-{wheel}.json\"",
+    "WHEEL_NAME=$(basename {wheel} .whl)",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
 ]
 
 # ---  OTHER CONFIGURATION ---
