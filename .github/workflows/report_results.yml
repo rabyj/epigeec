@@ -38,11 +38,13 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           path: all-test-results
 
-      # Get all reports and publish them using dorny/test-reporter
+      # Get all reports and publish them using ctrf-io/github-test-reporter
       - name: Publish Test Report
-        uses: dorny/test-reporter@v1
+        uses: ctrf-io/github-test-reporter@v1
         with:
-          name: Pytest Results (${{ github.event.workflow_run.conclusion }})
-          path: 'all-test-results/**/*.json'
-          reporter: 'ctrf'
-          pull-request-number: ${{ steps.pr_number.outputs.number }}
+          report-path: 'all-test-results/**/*.json'
+          pull-request: true
+          update-comment: true
+          comment-tag: '${{ github.workflow }}-${{ github.job }}'
+          issue: ${{ steps.pr_number.outputs.number }}
+        if: always()
