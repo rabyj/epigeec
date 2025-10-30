@@ -87,9 +87,8 @@ before-all = [
 
 # Linux-specific: Use /output to persist files from Docker container to host.
 test-command = [
-    "cd \"$CIBW_PROJECT_DIR\"",
-    "pytest {project}/epigeec/test --ctrf=\"reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
-    "mkdir -p /output/reports && cp -r reports/* /output/reports/",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
+    "mkdir -p /output/reports && cp -r {project}/reports/* /output/reports/",
 ]
 
 
@@ -101,10 +100,9 @@ before-all = [
     "brew install hdf5 boost libomp",
 ]
 
-# macOS-specific: Write directly to project directory since /output is not available.
+# macOS-specific: Write directly to project directory since no container is used.
 test-command = [
-    "cd \"$CIBW_PROJECT_DIR\"",
-    "pytest {project}/epigeec/test --ctrf=\"reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
+    "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-${CI_MATRIX_OS:-local}-$CIBW_BUILD.json\"",
 ]
 
 # ---  OTHER CONFIGURATION ---
