@@ -46,7 +46,7 @@ jobs:
 
       # Download all test result artifacts
       - name: Download all test result artifacts
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v11
         with:
           name: test-results-*
           name_is_regexp: true
