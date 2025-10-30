@@ -48,7 +48,9 @@ jobs:
       - name: Download all test result artifacts
         uses: dawidd6/action-download-artifact@v3
         with:
-          name_pattern: test-results-*
+          name: test-results-*
+          name_is_regexp: true
+          merge_multiple: true
           run_id: ${{ steps.run_id.outputs.id }}
           path: all-test-results
 
