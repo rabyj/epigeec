@@ -1,30 +1,34 @@
 # Copyright (C) 2015 Jonathan Laperle. All Rights Reserved.
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
 
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import
 
 import argparse
 
 import launcher
-import config
+
+from epigeec import __version__ as VERSION
+
 
 def parse_args(args):
-    parser = argparse.ArgumentParser(prog='epiGeEC', description = "EpiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
-    parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(config.VERSION))
+    # fmt: off
+    parser = argparse.ArgumentParser(prog='epiGeEC', description = "epiGeEC - Tools for fast NxN correlation of deep sequencing signal data")
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s {0}'.format(VERSION))
     subparsers = parser.add_subparsers(help = "Sub-command help.")
+    subparsers.required = True
 
     parser_hdf5 = subparsers.add_parser("to_hdf5", description="Average the signal in non-overlapping bins." ,help="Convert a signal file format to a more efficient hdf5 format for use with other epiGeEC tools.")
     parser_hdf5.set_defaults(func=launcher.to_hdf5)
@@ -50,6 +54,6 @@ def parse_args(args):
     parser_corr.add_argument("hdf5List", help="The list of HDF5 files to correlate, one file per line. (TEXT)")
     parser_corr.add_argument("chromSizes", help="Chromosome sizes of the assembly, chromosomes not in this file are ignored. (TEXT)")
     parser_corr.add_argument("outMatrix", help="The final tab-delimited matrix file. (TEXT)")
-    parser_corr.add_argument('--desc', type=str, default="")
-    
+    parser_corr.add_argument('-n', "--name", type=str, default="", help="Optional name for the correlation run to be included in the output matrix header. (STRING)")
+    # fmt: on
     return parser.parse_args(args)

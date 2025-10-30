@@ -1,0 +1,50 @@
+# .github/workflows/report-results.yml
+name: Report Test Results
+
+on:
+  workflow_run:
+    workflows: ["Build and Test Wheels"] # Match the 'name:' of the first workflow
+    types:
+      - completed
+
+jobs:
+  report:
+    name: Publish Test Report
+    runs-on: ubuntu-latest
+    # Only run this job for pull request events from the first workflow
+    if: github.event.workflow_run.event == 'pull_request'
+
+    # Give this job write permissions to comment on the PR
+    permissions:
+      pull-requests: write
+
+    steps:
+      # Download PR number artifact created by main workflow.
+      - name: Download PR Number artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          name: pr_number
+          run_id: ${{ github.event.workflow_run.id }}
+
+      - name: Read PR number from file
+        id: pr_number
+        run: echo "number=$(cat pr_number.txt)" >> $GITHUB_OUTPUT
+
+      # Download all test result artifacts from the workflow run to 'all-test-results' directory.
+      - name: Download all test result artifacts
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          name_pattern: test-results-*
+          run_id: ${{ github.event.workflow_run.id }}
+          path: all-test-results
+
+      # Get all reports and publish them using ctrf-io/github-test-reporter
+      - name: Publish Test Report
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: 'all-test-results/**/*.json'
+          pull-request: true
+          update-comment: true
+          comment-tag: '${{ github.workflow }}-${{ github.job }}'
+          issue: ${{ steps.pr_number.outputs.number }}
+        if: always()

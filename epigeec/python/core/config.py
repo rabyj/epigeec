@@ -13,12 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # =============================================================================
-
-from __future__ import absolute_import, division, print_function
-
 import os.path
-
-VERSION = "1.5.1"
 
 CORE_DIR = os.path.dirname(os.path.realpath(__file__))
 PY_DIR = os.path.dirname(CORE_DIR)
