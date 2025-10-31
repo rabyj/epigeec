@@ -1,0 +1,55 @@
+# Test Results 🧪
+
+| **Tests 📝** | **Passed ✅** | **Failed ❌** | **Skipped ⏭️** | **Duration ⏱️** |
+| --- | --- | --- | --- | --- |
+| {{ctrf.summary.tests}} | {{ctrf.summary.passed}} | {{ctrf.summary.failed}} | {{ctrf.summary.skipped}} | {{formatDurationFromTimes ctrf.summary.start ctrf.summary.stop}} |
+
+## Test Results by Build
+
+{{#each ctrf.tests}}
+  {{#if (eq @index 0)}}
+  ### Build: {{#if extra.build}}Python {{extra.build.python}} - {{extra.build.arch}}{{else}}Unknown Build{{/if}}
+  {{/if}}
+{{/each}}
+
+<details>
+  <summary>See all test results</summary>
+  <br>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Test Name</th>
+        <th>Status</th>
+        <th>Duration</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each ctrf.tests}}
+      <tr>
+        <td>{{name}}</td>
+        <td>
+          {{#if (eq status "passed")}}✅{{/if}}
+          {{#if (eq status "failed")}}❌{{/if}}
+          {{#if (eq status "skipped")}}⏭️{{/if}}
+          {{status}}
+        </td>
+        <td>{{duration}}ms</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+</details>
+
+{{#if (gt ctrf.summary.failed 0)}}
+## Failed Tests ❌
+
+| **Test Name** | **Failure Message** |
+| --- | --- |
+{{#each ctrf.tests}}
+  {{#if (eq status "failed")}}
+  | {{name}} | {{#if message}}{{stripAnsi message}}{{else}}No failure message{{/if}} |
+  {{/if}}
+{{/each}}
+{{/if}}

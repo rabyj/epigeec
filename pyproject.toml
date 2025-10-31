@@ -84,7 +84,10 @@ before-all = [
 # Linux-specific: Use /output to persist files from Docker container to host.
 test-command = [
     "WHEEL_NAME=$(basename {wheel} .whl)",
+    "ARCH=$(echo $WHEEL_NAME | grep -oE 'x86_64|aarch64' | head -1)",
+    "PY_VER=$(echo $WHEEL_NAME | grep -oE 'cp[0-9]+' | head -1)",
     "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
+    "python {project}/epigeec/test/reports/add_build_info_to_ctrf.py \"{project}/reports/ctrf-report-$WHEEL_NAME.json\" \"$PY_VER\" \"$ARCH\" \"$CI_MATRIX_OS\"",
     "mkdir -p /output/reports && cp -r {project}/reports/* /output/reports/",
 ]
 
@@ -100,7 +103,10 @@ before-all = [
 # macOS-specific: Write directly to project directory since no container is used.
 test-command = [
     "WHEEL_NAME=$(basename {wheel} .whl)",
+    "ARCH=$(echo $WHEEL_NAME | grep -oE '(x86_64|arm64|universal2)' | head -1)",
+    "PY_VER=$(echo $WHEEL_NAME | grep -oE 'cp[0-9]+' | head -1)",
     "pytest {project}/epigeec/test --ctrf=\"{project}/reports/ctrf-report-$WHEEL_NAME.json\"",
+    "python {project}/epigeec/test/reports/add_build_info_to_ctrf.py \"{project}/reports/ctrf-report-$WHEEL_NAME.json\" \"$PY_VER\" \"$ARCH\" \"$CI_MATRIX_OS\"",
 ]
 
 # ---  OTHER CONFIGURATION ---
