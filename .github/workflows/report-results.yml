@@ -68,4 +68,14 @@ jobs:
           issue: ${{ steps.pr_number.outputs.number }}
           custom-report: true
           template-path: 'epigeec/test/reports/ctrf-summary-template.hbs'
+          group-by: 'suite' # set in add_build_info_to_ctrf.py
+          always-group-by: true
+          write-ctrf-to-file: 'final-merged-report.json'
         if: always()
+
+      - name: Debug - Print Merged Report
+        if: always()
+        run: |
+          echo "--- Contents of final-merged-report.json ---"
+          cat final-merged-report.json
+          echo "--------------------------------------------"

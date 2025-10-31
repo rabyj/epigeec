@@ -10,6 +10,7 @@ Example:
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -43,7 +44,17 @@ def add_build_info(report_file_path, python_ver, architecture, operating_system)
         "python": python_ver,
         "arch": architecture,
         "os": operating_system,
+        "run_id": os.environ.get("GITHUB_RUN_ID", "local"),
     }
+
+    # Set suite name for grouping in the report
+    # The 'suite' property belongs to each individual test object
+    suite_name = f"{python_ver} | {architecture} | {operating_system}"
+    if "tests" in data.get("results", {}):
+        for test in data["results"]["tests"]:
+            test["suite"] = suite_name
+    else:
+        print(f"Warning: No 'tests' array found in {report_file.name}", file=sys.stderr)
 
     # Write back to file
     with open(report_file, "w", encoding="utf8") as f:
