@@ -118,6 +118,7 @@ jobs:
           config-file: pyproject.toml
         env:
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
+          CIBW_ENVIRONMENT: CI_MATRIX_OS=${{ matrix.os }} # Add to pass OS to test commands
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
 
       # Set CIBW_BUILD for quick builds (Python 3.11 only)
@@ -132,6 +133,7 @@ jobs:
         env:
           CIBW_ARCHS: ${{ matrix.os == 'ubuntu-latest' && 'x86_64' || matrix.cibw_archs }}
           CIBW_BUILD: cp311-*
+          CIBW_ENVIRONMENT: CI_MATRIX_OS=${{ matrix.os }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
 
       # Create a sanitized string for the artifact name
