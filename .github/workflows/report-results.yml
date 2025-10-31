@@ -38,7 +38,7 @@ jobs:
 
       # Download PR number artifact created by main workflow
       - name: Download PR Number artifact
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v11
         with:
           name: pr_number
           run_id: ${{ steps.run_id.outputs.id }}
@@ -55,6 +55,7 @@ jobs:
           name_is_regexp: true
           run_id: ${{ steps.run_id.outputs.id }}
           path: all-test-results
+        if: always()
 
       # Get all reports and publish them using ctrf-io/github-test-reporter
       - name: Publish Test Report
