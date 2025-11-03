@@ -54,7 +54,7 @@ int main(int argc, const char * argv[]) {
   chrom_path = argv[2];
   bin = std::stoi(argv[3], NULL, 10);
   output_path = argv[4];
-  input_name = boost::filesystem::basename(input_path);
+  input_name = boost::filesystem::path(input_path).stem().string();
 
   ChromSize chrom_size = ChromSize(chrom_path);
   Hdf5Writer hdf5_writer(output_path);
@@ -71,7 +71,7 @@ int main(int argc, const char * argv[]) {
     hdf5_dataset -> NormaliseContent();
     hdf5_writer.AddDataset(*hdf5_dataset);
     hdf5_writer.SetSignal("/", input_name);
-    hdf5_writer.SetChromSizes("/", boost::filesystem::basename(chrom_path));
+    hdf5_writer.SetChromSizes("/", boost::filesystem::path(chrom_path).stem().string());
     hdf5_writer.SetBin("/", bin);
     delete hdf5_dataset;
     hdf5_dataset = NULL;
@@ -129,7 +129,7 @@ int main(int argc, const char * argv[]) {
         delete genomic_file_reader;
         genomic_file_reader = NULL;
       } catch (std::exception& e) {
-        #pragma omp critical (stdout) 
+        #pragma omp critical (stdout)
         {
           printf("Error while reading: %s\n", input_path.c_str());
           delete hdf5_dataset;
