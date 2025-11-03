@@ -85,29 +85,23 @@ jobs:
       fail-fast: false # Continue building other platforms if one fails
       matrix:
         include:
-          - os: ubuntu-latest
-            cibw_archs: "x86_64 aarch64"
+          - os: ubuntu-22.04 # x86_64
 
-          - os: macos-13 # Intel Mac for x86_64 - could not build without specifying 13.0
-            cibw_archs: "x86_64"
-            deployment_target: "13.0"
+          - os: ubuntu-22.04-arm
 
-          - os: macos-14 # Apple Silicon - could not build without specifying 14.0
-            cibw_archs: "arm64"
-            deployment_target: "14.0"
+          - os: macos-15-intel # x86_64
+          # Python3.12 rust toolchain minimum is macOS 10.12
+          # But when using macos-15 runner, one has to set 15.0 since libhdf5 and co. are build against 15.0
+            deployment_target: "15.0"
+
+          - os: macos-15 # arm
+            deployment_target: "15.0"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # full history with tags for setuptools_scm
-
-      - name: Set up QEMU (for ARM on Linux)
-        if: |
-          runner.os == 'Linux' &&
-          needs.determine_build_type.outputs.full_build == 'true' &&
-          contains(matrix.cibw_archs, 'aarch64')
-        uses: docker/setup-qemu-action@v3
 
       # Do not set CIBW_BUILD here, let pyproject.toml handle it
       - name: Build wheels (full build)
@@ -117,7 +111,6 @@ jobs:
           output-dir: dist
           config-file: pyproject.toml
         env:
-          CIBW_ARCHS: ${{ matrix.cibw_archs }}
           # '>' allows multi-line env var for better readability, it will be joined with spaces ('|' joins with newlines, not suitable here)
           CIBW_ENVIRONMENT: >
             CI_MATRIX_OS=${{ matrix.os }}
@@ -125,37 +118,28 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
 
       # Set CIBW_BUILD for quick builds (Python 3.11 only)
+      # Only build for one ubuntu and macOS architecture each
       - name: Build wheels (quick build)
         if: |
           needs.determine_build_type.outputs.full_build == 'false' &&
-          (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-14')
+          (matrix.os == 'ubuntu-22.04' || matrix.os == 'macos-15')
         uses: pypa/cibuildwheel@v3.2.1
         with:
           output-dir: dist
           config-file: pyproject.toml
         env:
-          CIBW_ARCHS: ${{ matrix.os == 'ubuntu-latest' && 'x86_64' || matrix.cibw_archs }}
           CIBW_BUILD: cp311-*
           CIBW_ENVIRONMENT: >
             CI_MATRIX_OS=${{ matrix.os }}
             GITHUB_RUN_ID=${{ github.run_id }}
           MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target || '' }}
 
-      # Create a sanitized string for the artifact name
-      # Since we can't use 'replace' directly in the upload-artifact name field
-      - name: Generate artifact name
-        id: artifact_name
-        shell: bash
-        run: |
-          archs="${{ matrix.cibw_archs }}"
-          echo "arch_string=${archs// /-}" >> $GITHUB_OUTPUT
-
       # Upload built wheels
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         if: "!env.ACT"
         with:
-          name: wheels-${{ matrix.os }}-${{ steps.artifact_name.outputs.arch_string }}
+          name: wheels-${{ matrix.os }}
           path: dist/*.whl
           if-no-files-found: ignore  # Don't fail if no wheels were built
 
@@ -165,7 +149,7 @@ jobs:
         if: "!env.ACT"
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.os }}-${{ steps.artifact_name.outputs.arch_string }}
+          name: test-results-${{ matrix.os }}
           # Look for reports in both possible locations
           path: |
             reports/
