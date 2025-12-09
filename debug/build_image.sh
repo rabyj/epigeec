@@ -3,19 +3,26 @@ set -e
 
 export DOCKER_BUILDKIT=1
 
+# Get script directory and project root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+
 # Build depending on input argument
 if [ "$1" == "yum" ]; then
-    build_file="debug/Dockerfile.yum"
+    build_file="${SCRIPT_DIR}/Dockerfile.yum"
     tag="custom-manylinux_2_28_x86_64"
     cache=""
 elif [ "$1" == "cmake" ]; then
-    build_file="debug/Dockerfile.cmake"
+    build_file="${SCRIPT_DIR}/Dockerfile.cmake"
     tag="custom-manylinux_2_28_x86_64-epigeec-built"
     cache="--no-cache"
 else
     echo "Usage: $0 [yum|cmake]"
     exit 1
 fi
+
+# Change to project root for build context
+cd "$PROJECT_ROOT"
 
 docker build $cache --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g) -f $build_file -t $tag .
 

@@ -41,8 +41,7 @@ else
 fi
 
 # Run specific test scripts inside wheel test phase
-# export CIBW_TEST_COMMAND="echo '--- Filesystem before test ---' && tree {project} && python -Wd {project}/epigeec/test/filter_test.py && python -Wd {project}/epigeec/test/test.py"
-export CIBW_TEST_COMMAND="python -Wd {project}/epigeec/test/filter_test.py && python -Wd {project}/epigeec/test/test.py"
+export CIBW_TEST_COMMAND="pytest {project}/epigeec/test"
 
 
 # --- RUN CIBUILDWHEEL ---

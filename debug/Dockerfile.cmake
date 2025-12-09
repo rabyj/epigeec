@@ -27,5 +27,8 @@ RUN mkdir -p build && \
     cmake .. && \
     make -j "$(nproc --all)"
 
+# Switch back to root for cibuildwheel, which requires root privileges within manylinux
+USER root
+
 # Default entrypoint
 CMD ["/bin/bash"]

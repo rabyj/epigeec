@@ -18,9 +18,9 @@ readme = "README.rst"
 license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.10"
 dependencies = [
-    "pandas",
-    "numpy",
-    "h5py",
+    "pandas>=2.2", # For DRAC systems compatibility
+    "numpy>=2.2",
+    "h5py>=3.12",
     "future",
 ]
 

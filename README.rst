@@ -6,4 +6,4 @@ The **epiGenomic Efficient Correlator** tool is designed to efficiently perform 
 
 A galaxy implementation including thousands of pre-computed public datasets is available at http://epigeec.genap.ca/galaxy/ and also includes support for the WIG format and Spearman correlation. It also offers tools for further annotation and analysis of the matrix files created by epiGeEC.
 
-For more information see the official repository for the epiGeEC tool at https://github.com/labjacquespe/epigeec. The previous BitBucket repository is still available but will only mirror.
+For more information see the official repository for the epiGeEC tool at https://github.com/labjacquespe/epigeec. The previous BitBucket repository is still available as an archive.
